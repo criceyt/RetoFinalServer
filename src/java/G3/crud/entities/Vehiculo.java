@@ -1,59 +1,152 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package G3.crud.entities;
+package java.G3.crud.entities;
 
+import G3.crud.entities.Mantenimiento;
+import G3.crud.entities.Proveedores;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
+import java.util.List;
 
-/**
- *
- * @author 2dam
- */
 @Entity
+@Table(name = "Vehiculo", schema = "concesionariodb")
 public class Vehiculo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idVehiculo")
+    private Long idVehiculo;
+    @Column(name = "matricula", nullable = false, unique = true)
+    private String matricula;
+    @Column(name = "marca", nullable = false)
+    private String marca;
+    @Column(name = "modelo", nullable = false)
+    private String modelo;
+    @Column(name = "color")
+    private String color;
+    @Column(name = "potencia")
+    private Integer potencia;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fechaAlta", nullable = false)
+    private Date fechaAlta;
+    @Column(name = "tipoVehiculo")
+    private String tipoVehiculo;
 
-    public Long getId() {
-        return id;
+    @OneToMany
+    @JoinColumn(name = "idMantenimiento")
+    private Mantenimiento proveedor;
+
+    @ManyToMany
+    @JoinTable(
+            name = "Vehiculo_Proveedores",
+            joinColumns = @JoinColumn(name = "idVehiculo"),
+            inverseJoinColumns = @JoinColumn(name = "idProveedor")
+    )
+    private List<Proveedores> proveedores;
+
+    @ManyToMany(mappedBy = "vehiculosComprados")
+    private List<Usuario> usuarios;
+
+    // Constructores
+    public Vehiculo() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Vehiculo(String matricula, String marca, String modelo, String color, Integer potencia, Date fechaAlta, String tipoVehiculo) {
+        this.matricula = matricula;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.color = color;
+        this.potencia = potencia;
+        this.fechaAlta = fechaAlta;
+        this.tipoVehiculo = tipoVehiculo;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+    // Getters y Setters
+    public Long getIdVehiculo() {
+        return idVehiculo;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Vehiculo)) {
-            return false;
-        }
-        Vehiculo other = (Vehiculo) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+    public void setIdVehiculo(Long idVehiculo) {
+        this.idVehiculo = idVehiculo;
     }
 
-    @Override
-    public String toString() {
-        return "G3.crud.entities.Vehiculo[ id=" + id + " ]";
+    public String getMatricula() {
+        return matricula;
     }
-    
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Integer getPotencia() {
+        return potencia;
+    }
+
+    public void setPotencia(Integer potencia) {
+        this.potencia = potencia;
+    }
+
+    public Date getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(Date fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
+    public String getTipoVehiculo() {
+        return tipoVehiculo;
+    }
+
+    public void setTipoVehiculo(String tipoVehiculo) {
+        this.tipoVehiculo = tipoVehiculo;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    public List<Mantenimiento> getMantenimientos() {
+        return mantenimientos;
+    }
+
+    public void setMantenimientos(List<Mantenimiento> mantenimientos) {
+        this.mantenimientos = mantenimientos;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
 }
