@@ -1,59 +1,140 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package G3.crud.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import static javax.persistence.CascadeType.ALL;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-/**
- *
- * @author 2dam
- */
 @Entity
+@Table(name = "vehiculo", schema = "concesionariodb")
+@XmlRootElement
 public class Vehiculo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long idVehiculo;
+    
+    private String matricula;
+    private String marca;
+    private String modelo;
+    private String color;
+    private Integer potencia;
+    @Temporal(TemporalType.DATE)
+    private Date fechaAlta;
+    private String tipoVehiculo;
 
-    public Long getId() {
-        return id;
+    // Relacion Vehiculo a Mantenimiento
+    @OneToMany
+    private Set<Mantenimiento> mantenimiento;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "vehiculoProveedor", schema="concesionariodb",
+            joinColumns = @JoinColumn(name = "vehiculos_idVehiculo",referencedColumnName="idVehiculo"),
+            inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName="idProveedor"))
+    private Set<Proveedor> proveedores;
+        // Relacion de Vehiculo a Compra
+    @OneToMany(cascade=ALL, mappedBy = "vehiculo")
+    private Set<Compra> compras;
+
+    @XmlTransient
+    public Set<Mantenimiento> getMantenimiento() {
+        return mantenimiento;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMantenimiento(Set<Mantenimiento> mantenimiento) {
+        this.mantenimiento = mantenimiento;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+    // Relacion Vehiculo con Proveedor
+    
+    
+    @XmlTransient
+    public Set<Proveedor> getProveedores() {
+        return proveedores;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Vehiculo)) {
-            return false;
-        }
-        Vehiculo other = (Vehiculo) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+    public void setProveedores(Set<Proveedor> proveedores) {
+        this.proveedores = proveedores;
     }
 
-    @Override
-    public String toString() {
-        return "G3.crud.entities.Vehiculo[ id=" + id + " ]";
+    @XmlTransient
+    public Set<Compra> getCompras() {
+        return compras;
+    }
+
+    public void setCompras(Set<Compra> compras) {
+        this.compras = compras;
     }
     
+
+    
+    
+    // Getters y Setters
+    public Long getIdVehiculo() {
+        return idVehiculo;
+    }
+
+    public void setIdVehiculo(Long idVehiculo) {
+        this.idVehiculo = idVehiculo;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Integer getPotencia() {
+        return potencia;
+    }
+
+    public void setPotencia(Integer potencia) {
+        this.potencia = potencia;
+    }
+
+    public Date getFechaAlta() {
+        return fechaAlta;
+    }
+
+    public void setFechaAlta(Date fechaAlta) {
+        this.fechaAlta = fechaAlta;
+    }
+
+    public String getTipoVehiculo() {
+        return tipoVehiculo;
+    }
+
+    public void setTipoVehiculo(String tipoVehiculo) {
+        this.tipoVehiculo = tipoVehiculo;
+    }
 }

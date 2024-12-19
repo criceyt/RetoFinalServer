@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 )
 
 @XmlRootElement
-public class Proveedores implements Serializable {
+public class Proveedor implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
@@ -100,6 +101,7 @@ public class Proveedores implements Serializable {
 
     // getters and setters de la lista
     
+    @XmlTransient
     public List<Vehiculo> getVehiculos() {
         return vehiculos;
     }
@@ -121,10 +123,10 @@ public class Proveedores implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Proveedores)) {
+        if (!(object instanceof Proveedor)) {
             return false;
         }
-        Proveedores other = (Proveedores) object;
+        Proveedor other = (Proveedor) object;
         if ((this.idProveedor == null && other.idProveedor != null) || (this.idProveedor != null && !this.idProveedor.equals(other.idProveedor))) {
             return false;
         }
