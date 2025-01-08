@@ -28,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @NamedQueries({
     @NamedQuery(name="buscarTodosMantenimientos", query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC"),
-    @NamedQuery(name="buscarDatosExtra", query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC")
+    @NamedQuery(name="buscarDatosExtra", query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC"),
+    @NamedQuery(name = "filtradoPorDatePickerMantenimiento", query = "SELECT a FROM Mantenimiento a WHERE FUNCTION('DATE', a.fechaFinalizacion) = FUNCTION('DATE', :fechaFinalizacion)")
 })
 
 @Entity

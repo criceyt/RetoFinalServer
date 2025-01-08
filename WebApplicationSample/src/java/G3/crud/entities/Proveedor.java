@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,34 +23,37 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author oier
  */
+@NamedQueries({
+    @NamedQuery(name = "sacarProveedores", query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
+    @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
+})
+
 @Entity
-@Table(name="proveedores", schema="pruebadb")
-@NamedQuery(name="sacarProveedores", query="SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC")
+@Table(name = "proveedores", schema = "pruebadb")
 
 @XmlRootElement
 public class Proveedor implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     // Atributos
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idProveedor;
     private String nombreProveedor;
-    
+
     @Enumerated(EnumType.ORDINAL)
     private TipoVehiculo tipoVehiculo;
-    
+
     private String especialidad;
-    
+
     @Temporal(TemporalType.DATE)
     private Date ultimaActividad;
-    
+
     // Relacion
-    @ManyToMany(mappedBy="proveedores", fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "proveedores", fetch = FetchType.EAGER)
     private Set<Vehiculo> vehiculos;
-    
+
     @XmlTransient
     public Set<Vehiculo> getVehiculos() {
         return vehiculos;
@@ -59,9 +63,7 @@ public class Proveedor implements Serializable {
         this.vehiculos = vehiculos;
     }
 
-
     // getters and setters
-    
     public Long getIdProveedor() {
         return idProveedor;
     }
@@ -103,17 +105,12 @@ public class Proveedor implements Serializable {
     }
 
     // getters and setters de la lista
-    
-    
-    
-    
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (idProveedor != null ? idProveedor.hashCode() : 0);
         return hash;
     }
-
 
     @Override
     public boolean equals(Object object) {
@@ -132,5 +129,5 @@ public class Proveedor implements Serializable {
     public String toString() {
         return "G3.crud.entities.Proveedores[ id=" + idProveedor + " ]";
     }
-    
+
 }

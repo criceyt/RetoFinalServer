@@ -6,13 +6,18 @@
 package service;
 
 import G3.crud.entities.Proveedor;
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -86,6 +91,30 @@ public class ProveedorFacadeREST extends AbstractFacade<Proveedor> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+    // Filtrado por DatePicker para Proveedores
+    @GET
+    @Path("ultimaActividad/{ultimaActividad}")
+    @Produces({"application/xml"})
+    public List<Proveedor> filtradoPorDatePickerProveedores(@PathParam("ultimaActividad") String ultimaActividad) {
+        List<Proveedor> proveedores = null;
+        try {
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(ultimaActividad);
+
+            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
+            proveedores = em.createNamedQuery("filtradoPorDatePickerProveedores")
+                    .setParameter("ultimaActividad", parseo)
+                    .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return proveedores;
     }
     
     
