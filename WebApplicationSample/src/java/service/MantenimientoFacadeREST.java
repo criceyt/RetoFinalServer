@@ -6,13 +6,18 @@
 package service;
 
 import G3.crud.entities.Mantenimiento;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -27,6 +32,8 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("g3.crud.entities.mantenimiento")
 public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
+    
+    private Logger LOGGER = Logger.getLogger(VehiculoFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")
     private EntityManager em;
@@ -81,6 +88,30 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
+    }
+    
+    // Filtrado por DatePicker para Mantenimientos
+    @GET
+    @Path("fechaFinalizacion/{fechaFinalizacion}")
+    @Produces({"application/xml"})
+    public List<Mantenimiento> filtradoPorDatePickerMantenimiento(@PathParam("fechaFinalizacion") String fechaFinalizacion) {
+        List<Mantenimiento> mantenimientos = null;
+        try {
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(fechaFinalizacion);
+
+            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
+            mantenimientos = em.createNamedQuery("filtradoPorDatePickerMantenimiento")
+                    .setParameter("fechaFinalizacion", parseo)
+                    .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return mantenimientos;
     }
 
     @Override

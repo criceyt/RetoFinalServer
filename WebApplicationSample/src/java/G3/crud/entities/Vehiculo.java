@@ -16,16 +16,12 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name="cargarVehiculos", query="SELECT a FROM Vehiculo a ORDER BY a.id DESC"),
     @NamedQuery(name="filtradoKmVehiculo", query="SELECT a FROM Vehiculo a WHERE a.km <= :km ORDER BY a.km DESC"),
-    @NamedQuery(name="filtradoColorVehiculo", query="SELECT a FROM Vehiculo a ORDER BY a.color"),
-    @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a ORDER BY a.potencia DESC"),
-    @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a ORDER BY a.marca"),
-    @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a ORDER BY a.precio ASC")
+    @NamedQuery(name="filtradoColorVehiculo", query="SELECT a FROM Vehiculo a WHERE a.color = :color"),
+    @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC"),
+    @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.marca = :marca"),
+    @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC"),
+    @NamedQuery(name = "filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
 })
-    
-    
-    
-
-
 
 @Entity
 @Table(name = "vehiculo", schema = "pruebadb")
@@ -46,7 +42,7 @@ public class Vehiculo implements Serializable {
     private String tipoVehiculo;
 
     // Relacion Vehiculo a Mantenimiento
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
     private Set<Mantenimiento> mantenimientos;
 
     @XmlTransient

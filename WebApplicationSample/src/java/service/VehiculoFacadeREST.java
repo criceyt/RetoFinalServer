@@ -6,7 +6,9 @@
 package service;
 
 import G3.crud.entities.Vehiculo;
-import static G3.crud.entities.Vehiculo_.km;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+//import static G3.crud.entities.Vehiculo_.km;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -92,13 +94,88 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    // Filtrado de marca
+    @GET
+    @Path("marca/{marca}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoMarcaVehiculo(@PathParam("marca") String marca) {
+        List<Vehiculo> vehiculos=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",marca);
+             vehiculos=em.createNamedQuery("filtradoMarcaVehiculo")
+                     .setParameter("marca", marca)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado de color
+    @GET
+    @Path("color/{color}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoColorVehiculo(@PathParam("color") String color) {
+        List<Vehiculo> vehiculos=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",color);
+             vehiculos=em.createNamedQuery("filtradoColorVehiculo")
+                     .setParameter("color", color)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado de precio
+    @GET
+    @Path("precio/{precio}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoPrecioVehiculo(@PathParam("precio") Integer precio) {
+        List<Vehiculo> vehiculos=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",precio);
+             vehiculos=em.createNamedQuery("filtradoPrecioVehiculo")
+                     .setParameter("precio", precio)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado de potencia
+    @GET
+    @Path("potencia/{potencia}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoPotenciaVehiculo(@PathParam("potencia") Integer potencia) {
+        List<Vehiculo> vehiculos=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",potencia);
+             vehiculos=em.createNamedQuery("filtradoPotenciaVehiculo")
+                     .setParameter("potencia", potencia)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
 
-    /**
-     * RESTful GET method for reading all {@link User} objects that has a certain profile
-     * through an XML representation.
-     * @param profile The profile value for the object.
-     * @return A List of User objects containing data.
-     */
+    // Filtrado de km
     @GET
     @Path("km/{km}")
     @Produces({"application/xml"})
@@ -109,6 +186,30 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
              vehiculos=em.createNamedQuery("filtradoKmVehiculo")
                      .setParameter("km", km)
                      .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado por DatePicker
+    @GET
+    @Path("fechaAlta/{fechaAlta}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) {
+        List<Vehiculo> vehiculos = null;
+        try {
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(fechaAltaString);
+
+            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
+            vehiculos = em.createNamedQuery("filtradoDatePicker")
+                    .setParameter("fechaAlta", parseo)
+                    .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "UserRESTful service: Exception reading users by profile, {0}",

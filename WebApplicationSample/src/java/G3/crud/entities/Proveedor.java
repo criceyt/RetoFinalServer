@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name="proveedores", schema="pruebadb")
 //@NamedQuery(name="sacarProveedores", query="SELECT a FROM Proveedores a ORDER BY a.id DESC")
+@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
 
 @XmlRootElement
 public class Proveedor implements Serializable {
