@@ -6,7 +6,8 @@
 package service;
 
 import G3.crud.entities.Proveedor;
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+import static com.sun.xml.ws.spi.db.BindingContextFactory.LOGGER;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,7 @@ import javax.ws.rs.core.MediaType;
  * @author 2dam
  */
 @Stateless
-@Path("g3.crud.entities.proveedor")
+@Path("proveedor")
 public class ProveedorFacadeREST extends AbstractFacade<Proveedor> {
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")

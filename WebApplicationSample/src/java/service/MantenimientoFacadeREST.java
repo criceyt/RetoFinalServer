@@ -6,7 +6,8 @@
 package service;
 
 import G3.crud.entities.Mantenimiento;
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+import static com.sun.xml.ws.spi.db.BindingContextFactory.LOGGER;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -92,8 +93,8 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
-     // Filtrado por DatePicker para Proveedores
+    /*
+     // Filtrado por DatePicker para Mantenimiento
     @GET
     @Path("fechaFinalizacion/{fechaFinalizacion}")
     @Produces({"application/xml"})
@@ -116,5 +117,5 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
         }
         return mantenimientos;
     }
-    
+    */
 }
