@@ -26,6 +26,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "sacarProveedores", query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
     @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
+    //@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
+    //@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
 })
 
 @Entity

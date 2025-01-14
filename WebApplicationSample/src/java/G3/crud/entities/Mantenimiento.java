@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package G3.crud.entities;
 
 import java.io.Serializable;
@@ -27,13 +22,31 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @NamedQueries({
-    @NamedQuery(name="buscarTodosMantenimientos", query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC"),
-    @NamedQuery(name="buscarDatosExtra", query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC"),
-    @NamedQuery(name = "filtradoPorDatePickerMantenimiento", query = "SELECT a FROM Mantenimiento a WHERE FUNCTION('DATE', a.fechaFinalizacion) = FUNCTION('DATE', :fechaFinalizacion)")
+    @NamedQuery(
+            name="buscarTodosMantenimientos",
+            query="SELECT a FROM Mantenimiento a ORDER BY a.id DESC"),
+    
+    @NamedQuery(
+            name = "filtradoPorDatePickerMantenimiento",
+            query = "SELECT a FROM Mantenimiento a WHERE FUNCTION('DATE', a.fechaFinalizacion) = FUNCTION('DATE', :fechaFinalizacion)"),      
+    
+    @NamedQuery(
+            name = "filtrarPorMantenimientoExitoso",
+            query = "SELECT m "+
+                   "FROM Mantenimiento m " +
+                   "WHERE m.mantenimientoExitoso = :mantenimientoExitoso"),
+    @NamedQuery(
+            name = "filtrarPorFechaFin",
+            query="SELECT a FROM Mantenimiento a WHERE a.fechaFinalizacion < :fechaFin"),
+    
+    @NamedQuery(
+            name = "buscarMantenimientoMatricula",
+            query = "SELECT a FROM Mantenimiento a JOIN a.vehiculo v WHERE v.idVehiculo = :idVehiculo")
 })
 
 @Entity
 @Table(name="mantenimiento",schema="pruebadb")
+
 @XmlRootElement
 public class Mantenimiento implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -41,7 +54,7 @@ public class Mantenimiento implements Serializable {
     // Atributos
     @Id     
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long idMantenimiento;
+     Long idMantenimiento;
     private String descripcion;
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -49,7 +62,7 @@ public class Mantenimiento implements Serializable {
     private boolean mantenimientoExitoso;
     
     @ManyToOne
-    @JoinColumn(name="id_Vehiculo")
+    @JoinColumn(name="idVehiculo")
     private Vehiculo vehiculo;
     
     // getters and setters
