@@ -43,9 +43,9 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
          */
         G3.crud.entities.CompraId key = new G3.crud.entities.CompraId();
         javax.ws.rs.core.MultivaluedMap<String, String> map = pathSegment.getMatrixParameters();
-        java.util.List<String> usuarioId = map.get("usuarioId");
-        if (usuarioId != null && !usuarioId.isEmpty()) {
-            key.setUsuarioId(new java.lang.Long(usuarioId.get(0)));
+        java.util.List<String> idPersona = map.get("idPersona");
+        if (idPersona != null && !idPersona.isEmpty()) {
+            key.setIdPersona(new java.lang.Long(idPersona.get(0)));
         }
         java.util.List<String> vehiculoId = map.get("vehiculoId");
         if (vehiculoId != null && !vehiculoId.isEmpty()) {
