@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -18,7 +19,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author 2dam
- */
+ */ 
+@NamedQueries({
+   @NamedQuery(name = "cargarDatosUsuario", query = "SELECT p FROM Usuario p WHERE p.idPersona = :idPersona")
+})
+
 @Entity
 @Table(name="usuario",schema="pruebadb")
 @XmlRootElement
@@ -30,7 +35,7 @@ public class Usuario extends Persona implements Serializable {
     private boolean premium;
 
    // Relacion de Usuario a Compra
-    @OneToMany(cascade=ALL, mappedBy="usuario")
+    @OneToMany(cascade=ALL, mappedBy="usuario", fetch = FetchType.EAGER)
     private Set<Compra> compras;
     
     

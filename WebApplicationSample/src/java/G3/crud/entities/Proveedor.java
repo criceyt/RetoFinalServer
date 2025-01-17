@@ -23,15 +23,17 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author oier
  */
-@NamedQueries({
-    @NamedQuery(name = "sacarProveedores", query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
-    @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
-    //@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
-    //@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
-})
-
 @Entity
-@Table(name = "proveedores", schema = "pruebadb")
+@Table(name = "proveedor", schema = "pruebadb")
+
+@NamedQueries({
+    //@NamedQuery(name = "buscarTodosProveedores",query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
+    @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
+    ,
+    //@NamedQuery(name = "buscarProveedorPorFechaVehiculo", query = "SELECT p FROM Proveedor p " + "JOIN p.vehiculos v WHERE p.ultimaActividad = v.fechaAlta"),
+    @NamedQuery(name="filtradoPorNombre", query="SELECT a FROM Proveedor a WHERE a.nombreProveedor = :nombreProveedor ORDER BY a.nombreProveedor DESC"),
+    @NamedQuery(name="filtradoPorTipoVehiculo", query="SELECT a FROM Proveedor a WHERE a.tipoVehiculo = :tipoVehiculo ORDER BY a.tipoVehiculo DESC"),
+})
 
 @XmlRootElement
 public class Proveedor implements Serializable {

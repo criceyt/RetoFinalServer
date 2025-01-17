@@ -30,10 +30,14 @@ import javax.ws.rs.core.MediaType;
  *
  * @author 2dam
  */
+
+
+
 @Stateless
-@Path("g3.crud.entities.vehiculo")
+@Path("vehiculo")
 public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
 
+    
     private Logger LOGGER = Logger.getLogger(VehiculoFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")
@@ -90,42 +94,18 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-
-    // Filtrado por DatePicker
-    @GET
-    @Path("fechaAlta/{fechaAlta}")
-    @Produces({"application/xml"})
-    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) {
-        List<Vehiculo> vehiculos = null;
-        try {
-            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date parseo = sdf.parse(fechaAltaString);
-
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
-            vehiculos = em.createNamedQuery("filtradoDatePicker")
-                    .setParameter("fechaAlta", parseo)
-                    .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
-        }
-        return vehiculos;
-    }
-
+    
     // Filtrado de marca
     @GET
     @Path("marca/{marca}")
     @Produces({"application/xml"})
     public List<Vehiculo> filtradoMarcaVehiculo(@PathParam("marca") String marca) {
-        List<Vehiculo> vehiculos = null;
+        List<Vehiculo> vehiculos=null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", marca);
-            vehiculos = em.createNamedQuery("filtradoMarcaVehiculo")
-                    .setParameter("marca", marca)
-                    .getResultList();
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",marca);
+             vehiculos=em.createNamedQuery("filtradoMarcaVehiculo")
+                     .setParameter("marca", marca)
+                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "UserRESTful service: Exception reading users by profile, {0}",
@@ -134,18 +114,18 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         return vehiculos;
     }
-
+    
     // Filtrado de color
     @GET
     @Path("color/{color}")
     @Produces({"application/xml"})
     public List<Vehiculo> filtradoColorVehiculo(@PathParam("color") String color) {
-        List<Vehiculo> vehiculos = null;
+        List<Vehiculo> vehiculos=null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", color);
-            vehiculos = em.createNamedQuery("filtradoColorVehiculo")
-                    .setParameter("color", color)
-                    .getResultList();
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",color);
+             vehiculos=em.createNamedQuery("filtradoColorVehiculo")
+                     .setParameter("color", color)
+                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "UserRESTful service: Exception reading users by profile, {0}",
@@ -154,18 +134,18 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         return vehiculos;
     }
-
+    
     // Filtrado de precio
     @GET
     @Path("precio/{precio}")
     @Produces({"application/xml"})
     public List<Vehiculo> filtradoPrecioVehiculo(@PathParam("precio") Integer precio) {
-        List<Vehiculo> vehiculos = null;
+        List<Vehiculo> vehiculos=null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", precio);
-            vehiculos = em.createNamedQuery("filtradoPrecioVehiculo")
-                    .setParameter("precio", precio)
-                    .getResultList();
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",precio);
+             vehiculos=em.createNamedQuery("filtradoPrecioVehiculo")
+                     .setParameter("precio", precio)
+                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "UserRESTful service: Exception reading users by profile, {0}",
@@ -174,18 +154,18 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         return vehiculos;
     }
-
+    
     // Filtrado de potencia
     @GET
     @Path("potencia/{potencia}")
     @Produces({"application/xml"})
     public List<Vehiculo> filtradoPotenciaVehiculo(@PathParam("potencia") Integer potencia) {
-        List<Vehiculo> vehiculos = null;
+        List<Vehiculo> vehiculos=null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", potencia);
-            vehiculos = em.createNamedQuery("filtradoPotenciaVehiculo")
-                    .setParameter("potencia", potencia)
-                    .getResultList();
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",potencia);
+             vehiculos=em.createNamedQuery("filtradoPotenciaVehiculo")
+                     .setParameter("potencia", potencia)
+                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "UserRESTful service: Exception reading users by profile, {0}",
@@ -200,11 +180,35 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @Path("km/{km}")
     @Produces({"application/xml"})
     public List<Vehiculo> filtrarPorKm(@PathParam("km") Integer km) {
+        List<Vehiculo> vehiculos=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",km);
+             vehiculos=em.createNamedQuery("filtradoKmVehiculo")
+                     .setParameter("km", km)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by profile, {0}",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado por DatePicker
+    @GET
+    @Path("fechaAlta/{fechaAlta}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) {
         List<Vehiculo> vehiculos = null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", km);
-            vehiculos = em.createNamedQuery("filtradoKmVehiculo")
-                    .setParameter("km", km)
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(fechaAltaString);
+
+            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
+            vehiculos = em.createNamedQuery("filtradoDatePicker")
+                    .setParameter("fechaAlta", parseo)
                     .getResultList();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,

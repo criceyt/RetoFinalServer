@@ -8,6 +8,7 @@ package service;
 import G3.crud.entities.Usuario;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -29,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 @Stateless
 @Path("g3.crud.entities.usuario")
 public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
+    
+    private Logger LOGGER = Logger.getLogger(UsuarioFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")
     private EntityManager em;
@@ -84,6 +87,27 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    
+    //Consulta para carga de datos usuario
+    @GET
+    @Path("idPersona/{idPersona}")
+    @Produces({"application/xml"})
+    public List<Usuario> mostrarDatosUser(@PathParam("idPersona") Long idPersona) {
+        List<Usuario> usuarios=null;
+        try {
+            LOGGER.log(Level.INFO,"UserRESTful service: find users by idPersona ",idPersona);
+             usuarios=em.createNamedQuery("cargarDatosUsuario")
+                     .setParameter("idPersona", idPersona)
+                     .getResultList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE,
+                    "UserRESTful service: Exception reading users by idPersona",
+                    e.getMessage());
+            throw new InternalServerErrorException(e);
+        }
+        return usuarios;
+    }
 
     @Override
     protected EntityManager getEntityManager() {
@@ -91,3 +115,4 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     }
     
 }
+

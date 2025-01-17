@@ -30,12 +30,12 @@ public class Compra implements Serializable {
  
     @EmbeddedId
     private CompraId idCompra;
-    @MapsId("usuarioId")
-    @JoinColumn(name = "usuarioId", referencedColumnName = "idPersona")
+    @MapsId("idPersona")
+    @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
     @ManyToOne
     private Usuario usuario;
-    @MapsId("vehiculoId")
-    @JoinColumn(name = "vehiculoId", referencedColumnName = "idVehiculo")
+    @MapsId("idVehiculo")
+    @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
     @ManyToOne
     private Vehiculo vehiculo;
     
