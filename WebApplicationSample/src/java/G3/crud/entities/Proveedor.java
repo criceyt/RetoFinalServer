@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -24,9 +25,14 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name="proveedores", schema="pruebadb")
-//@NamedQuery(name="sacarProveedores", query="SELECT a FROM Proveedores a ORDER BY a.id DESC")
-@NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
-
+@NamedQueries({
+    //@NamedQuery(name = "buscarTodosProveedores",query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
+    @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
+    ,
+    //@NamedQuery(name = "buscarProveedorPorFechaVehiculo", query = "SELECT p FROM Proveedor p " + "JOIN p.vehiculos v WHERE p.ultimaActividad = v.fechaAlta"),
+    @NamedQuery(name="filtradoPorNombre", query="SELECT a FROM Proveedor a WHERE a.nombreProveedor = :nombreProveedor ORDER BY a.nombreProveedor DESC"),
+    @NamedQuery(name="filtradoPorTipoVehiculo", query="SELECT a FROM Proveedor a WHERE a.tipoVehiculo = :tipoVehiculo ORDER BY a.tipoVehiculo DESC"),
+})
 @XmlRootElement
 public class Proveedor implements Serializable {
     

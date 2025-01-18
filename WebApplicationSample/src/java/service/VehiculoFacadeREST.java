@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 
 @Stateless
-@Path("g3.crud.entities.vehiculo")
+@Path("vehiculo")
 public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
 
     
