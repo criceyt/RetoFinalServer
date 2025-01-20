@@ -6,6 +6,7 @@
 package service;
 
 import G3.crud.entities.Vehiculo;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 //import static G3.crud.entities.Vehiculo_.km;
@@ -14,11 +15,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -99,16 +103,25 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("marca/{marca}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoMarcaVehiculo(@PathParam("marca") String marca) {
+    public List<Vehiculo> filtradoMarcaVehiculo(@PathParam("marca") String marca) throws NotFoundException{
         List<Vehiculo> vehiculos=null;
+        
+        if(marca == null){
+             LOGGER.log(Level.SEVERE, "La marca es nula");
+            throw new BadRequestException();
+        }
+        
         try {
             LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",marca);
              vehiculos=em.createNamedQuery("filtradoMarcaVehiculo")
                      .setParameter("marca", marca)
                      .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con esa marca");    
+            throw new NotFoundException(e);       
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
         }
@@ -119,16 +132,25 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("color/{color}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoColorVehiculo(@PathParam("color") String color) {
+    public List<Vehiculo> filtradoColorVehiculo(@PathParam("color") String color) throws NotFoundException{
         List<Vehiculo> vehiculos=null;
+        
+        if(color == null){
+             LOGGER.log(Level.SEVERE, "El color es nulo");
+            throw new BadRequestException();
+        }
+        
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",color);
+            LOGGER.log(Level.INFO,"Buscando vehiculos por color",color);
              vehiculos=em.createNamedQuery("filtradoColorVehiculo")
                      .setParameter("color", color)
                      .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con ese color");    
+            throw new NotFoundException(e);       
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
         }
@@ -139,16 +161,25 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("precio/{precio}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoPrecioVehiculo(@PathParam("precio") Integer precio) {
+    public List<Vehiculo> filtradoPrecioVehiculo(@PathParam("precio") Integer precio) throws NotFoundException{
         List<Vehiculo> vehiculos=null;
+        
+        if(precio == null){
+             LOGGER.log(Level.SEVERE, "El precio es nulo");
+            throw new BadRequestException();
+        }
+        
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",precio);
+            LOGGER.log(Level.INFO,"Buscando vehiculos por precio",precio);
              vehiculos=em.createNamedQuery("filtradoPrecioVehiculo")
                      .setParameter("precio", precio)
                      .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con ese precio");    
+            throw new NotFoundException(e);       
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
         }
@@ -159,16 +190,25 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("potencia/{potencia}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoPotenciaVehiculo(@PathParam("potencia") Integer potencia) {
+    public List<Vehiculo> filtradoPotenciaVehiculo(@PathParam("potencia") Integer potencia) throws NotFoundException{
         List<Vehiculo> vehiculos=null;
+        
+        if(potencia == null){
+             LOGGER.log(Level.SEVERE, "La potencia es nula");
+            throw new BadRequestException();
+        }
+        
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",potencia);
+            LOGGER.log(Level.INFO,"Buscando vehiculos por potencia",potencia);
              vehiculos=em.createNamedQuery("filtradoPotenciaVehiculo")
                      .setParameter("potencia", potencia)
                      .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con esa potencia");    
+            throw new NotFoundException(e);       
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
         }
@@ -179,16 +219,25 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("km/{km}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtrarPorKm(@PathParam("km") Integer km) {
+    public List<Vehiculo> filtrarPorKm(@PathParam("km") Integer km) throws NotFoundException{
         List<Vehiculo> vehiculos=null;
+        
+        if(km == null){
+             LOGGER.log(Level.SEVERE, "Los km son nulos");
+            throw new BadRequestException();
+        }
+        
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",km);
+            LOGGER.log(Level.INFO,"Buscando vehiculos por kilometros",km);
              vehiculos=em.createNamedQuery("filtradoKmVehiculo")
                      .setParameter("km", km)
                      .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con esos km");    
+            throw new NotFoundException(e);       
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
         }
@@ -199,22 +248,35 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @GET
     @Path("fechaAlta/{fechaAlta}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) {
+    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) throws NotFoundException{
         List<Vehiculo> vehiculos = null;
+        
+        if(fechaAltaString == null){
+             LOGGER.log(Level.SEVERE, "La fechaAlta es nula");
+            throw new BadRequestException();
+        }
+        
         try {
             // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date parseo = sdf.parse(fechaAltaString);
 
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
+            LOGGER.log(Level.INFO, "Buscando vehiculos en los que la fecha de alta sea igual a la introducida", parseo);
             vehiculos = em.createNamedQuery("filtradoDatePicker")
                     .setParameter("fechaAlta", parseo)
                     .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
+        } catch (ParseException e) {
+            LOGGER.log(Level.INFO, "Error al intentar parsear la fechaAlta");
+            throw new InternalServerErrorException(e);   
+        } catch(NoResultException e){
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun vehiculo con esa fecha de alta");    
+            throw new NotFoundException(e);
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO,
+                    "ERROR 500, Error interno en el servidor",
                     e.getMessage());
             throw new InternalServerErrorException(e);
+        
         }
         return vehiculos;
     }
