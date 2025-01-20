@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
  * @author 2dam
  */
 @Stateless
-@Path("g3.crud.entities.usuario")
+@Path("usuario")
 public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     
     private Logger LOGGER = Logger.getLogger(UsuarioFacadeREST.class.getName());

@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
  * @author 2dam
  */
 @Stateless
-@Path("g3.crud.entities.trabajador")
+@Path("trabajador")
 public class TrabajadorFacadeREST extends AbstractFacade<Trabajador> {
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")
