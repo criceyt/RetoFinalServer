@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 })
 
 @Entity
-@Table(name="mantenimiento",schema="pruebadb")
+@Table(name="mantenimiento",schema="concesionariodb")
 
 @XmlRootElement
 public class Mantenimiento implements Serializable {
@@ -57,8 +57,9 @@ public class Mantenimiento implements Serializable {
      Long idMantenimiento;
     private String descripcion;
     
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fechaFinalizacion;
+    
     private boolean mantenimientoExitoso;
     
     @ManyToOne

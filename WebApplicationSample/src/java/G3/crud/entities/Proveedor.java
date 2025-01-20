@@ -24,7 +24,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author oier
  */
 @Entity
-@Table(name="proveedores", schema="pruebadb")
+@Table(name = "proveedor", schema = "concesionariodb")
+
 @NamedQueries({
     //@NamedQuery(name = "buscarTodosProveedores",query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
     @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
@@ -33,30 +34,30 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name="filtradoPorNombre", query="SELECT a FROM Proveedor a WHERE a.nombreProveedor = :nombreProveedor ORDER BY a.nombreProveedor DESC"),
     @NamedQuery(name="filtradoPorTipoVehiculo", query="SELECT a FROM Proveedor a WHERE a.tipoVehiculo = :tipoVehiculo ORDER BY a.tipoVehiculo DESC"),
 })
+
 @XmlRootElement
 public class Proveedor implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     // Atributos
-    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idProveedor;
     private String nombreProveedor;
-    
-    @Enumerated(EnumType.ORDINAL)
+
+    @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
-    
+
     private String especialidad;
-    
+
     @Temporal(TemporalType.DATE)
     private Date ultimaActividad;
-    
+
     // Relacion
-    @ManyToMany(mappedBy="proveedores", fetch=FetchType.EAGER)
+    @ManyToMany(mappedBy = "proveedores", fetch = FetchType.EAGER)
     private Set<Vehiculo> vehiculos;
-    
+
     @XmlTransient
     public Set<Vehiculo> getVehiculos() {
         return vehiculos;
@@ -66,9 +67,7 @@ public class Proveedor implements Serializable {
         this.vehiculos = vehiculos;
     }
 
-
     // getters and setters
-    
     public Long getIdProveedor() {
         return idProveedor;
     }
@@ -110,17 +109,12 @@ public class Proveedor implements Serializable {
     }
 
     // getters and setters de la lista
-    
-    
-    
-    
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (idProveedor != null ? idProveedor.hashCode() : 0);
         return hash;
     }
-
 
     @Override
     public boolean equals(Object object) {
@@ -139,5 +133,5 @@ public class Proveedor implements Serializable {
     public String toString() {
         return "G3.crud.entities.Proveedores[ id=" + idProveedor + " ]";
     }
-    
+
 }

@@ -20,11 +20,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC"),
     @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.marca = :marca"),
     @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC"),
-    @NamedQuery(name = "filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
+    @NamedQuery(name ="filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
 })
 
 @Entity
-@Table(name = "vehiculo", schema = "pruebadb")
+@Table(name = "vehiculo", schema = "concesionariodb")
 @XmlRootElement
 public class Vehiculo implements Serializable {
 
@@ -56,7 +56,7 @@ public class Vehiculo implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "vehiculo_Proveedor", schema = "pruebadb",
+            name = "vehiculo_Proveedor", schema = "concesionariodb",
             joinColumns = @JoinColumn(name = "vehiculos_idVehiculo", referencedColumnName = "idVehiculo"),
             inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName = "idProveedor"))
     private Set<Proveedor> proveedores;

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @Entity
-@Table(name="trabajador",schema="pruebadb")
+@Table(name="trabajador",schema="concesionariodb")
 @XmlRootElement
 public class Trabajador extends Persona implements Serializable {
 
