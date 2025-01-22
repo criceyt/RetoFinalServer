@@ -20,8 +20,7 @@ public class Trabajador extends Persona implements Serializable {
     
     private float sueldo;
     private String puesto;
-
-
+    
     // getters and setters
 
     public float getSueldo() {

@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
    @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
 })
 
+
 @Entity
 @Table(name="persona",schema="concesionariodb")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -46,16 +47,7 @@ public class Persona implements Serializable {
     private Integer telefono;
     private String direccion;
     private String contrasena;
-    private boolean esUsuario;
-
     
-    public boolean isEsUsuario() {
-        return esUsuario;
-    }
-
-    public void setEsUsuario(boolean esUsuario) {
-        this.esUsuario = esUsuario;
-    }
 
     public Long getId() {
         return idPersona;
