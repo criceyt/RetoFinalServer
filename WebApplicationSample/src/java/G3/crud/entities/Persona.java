@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 })
 
 @Entity
-@Table(name="persona",schema="pruebadb")
+@Table(name="persona",schema="concesionariodb")
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 public class Persona implements Serializable {
@@ -46,7 +46,16 @@ public class Persona implements Serializable {
     private Integer telefono;
     private String direccion;
     private String contrasena;
+    private boolean esUsuario;
+
     
+    public boolean isEsUsuario() {
+        return esUsuario;
+    }
+
+    public void setEsUsuario(boolean esUsuario) {
+        this.esUsuario = esUsuario;
+    }
 
     public Long getId() {
         return idPersona;

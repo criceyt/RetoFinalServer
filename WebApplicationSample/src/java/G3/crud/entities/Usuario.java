@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 })
 
 @Entity
-@Table(name="usuario",schema="pruebadb")
+@Table(name="usuario",schema="concesionariodb")
 @XmlRootElement
 public class Usuario extends Persona implements Serializable {
 

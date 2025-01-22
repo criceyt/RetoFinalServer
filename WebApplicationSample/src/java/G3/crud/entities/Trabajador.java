@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @Entity
-@Table(name="trabajador",schema="pruebadb")
+@Table(name="trabajador",schema="concesionariodb")
 @XmlRootElement
 public class Trabajador extends Persona implements Serializable {
 
@@ -20,7 +20,8 @@ public class Trabajador extends Persona implements Serializable {
     
     private float sueldo;
     private String puesto;
-    
+
+
     // getters and setters
 
     public float getSueldo() {

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 })
 
 @Entity
-@Table(name = "vehiculo", schema = "pruebadb")
+@Table(name = "vehiculo", schema = "concesionariodb")
 @XmlRootElement
 public class Vehiculo implements Serializable {
 
@@ -56,7 +56,7 @@ public class Vehiculo implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "vehiculo_Proveedor", schema = "pruebadb",
+            name = "vehiculo_Proveedor", schema = "concesionariodb",
             joinColumns = @JoinColumn(name = "vehiculos_idVehiculo", referencedColumnName = "idVehiculo"),
             inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName = "idProveedor"))
     private Set<Proveedor> proveedores;

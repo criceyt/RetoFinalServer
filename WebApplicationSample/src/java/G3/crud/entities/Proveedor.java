@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author oier
  */
 @Entity
-@Table(name = "proveedor", schema = "pruebadb")
+@Table(name = "proveedor", schema = "concesionariodb")
 
 @NamedQueries({
     //@NamedQuery(name = "buscarTodosProveedores",query = "SELECT a FROM Proveedor a ORDER BY a.idProveedor DESC"),
@@ -46,7 +46,7 @@ public class Proveedor implements Serializable {
     private Long idProveedor;
     private String nombreProveedor;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
 
     private String especialidad;

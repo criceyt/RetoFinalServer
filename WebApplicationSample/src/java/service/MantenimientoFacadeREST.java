@@ -1,7 +1,6 @@
 package service;
 
 import G3.crud.entities.Mantenimiento;
-import static G3.crud.entities.Mantenimiento_.vehiculo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -50,7 +49,7 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
             super.create(entity);
         } catch (InternalServerErrorException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el mantenimiento", e);
-            throw new InternalServerErrorException(e);
+            throw new InternalServerErrorException("Error interno al crear el mantenimiento.", e);
         }
     }
 
@@ -69,9 +68,9 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                 throw new NotFoundException("Mantenimiento no encontrado.");
             }
             super.edit(entity);
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             LOGGER.log(Level.SEVERE, "Error al editar el mantenimiento con ID " + id, e);
-            throw new InternalServerErrorException(e);
+            throw new InternalServerErrorException("Error interno al editar el mantenimiento con ID " + id, e);
         }
     }
 
@@ -85,9 +84,9 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                 throw new NotFoundException("Mantenimiento no encontrado.");
             }
             super.remove(existingMantenimiento);
-        } catch (Exception e) {
+        } catch (InternalServerErrorException e) {
             LOGGER.log(Level.SEVERE, "Error al eliminar el mantenimiento con ID " + id, e);
-            throw new InternalServerErrorException(e);
+            throw new InternalServerErrorException("Error interno al eliminar el mantenimiento con ID " + id, e);
         }
     }
 
@@ -128,12 +127,12 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @GET
     @Path("fechaFinalizacion/{fechaFinalizacion}")
     @Produces({"application/xml"})
-    public List<Mantenimiento> filtradoPorDatePickerMantenimiento(@PathParam("fechaFinalizacion") String fechaFinalizacion) throws NotFoundException ,InternalServerErrorException {
+    public List<Mantenimiento> filtradoPorDatePickerMantenimiento(@PathParam("fechaFinalizacion") String fechaFinalizacion) throws NotFoundException, InternalServerErrorException {
         List<Mantenimiento> mantenimientos = null;
 
-        if (fechaFinalizacion == null) {
-            LOGGER.log(Level.SEVERE, "La fechaFinalizacion es nula");
-            throw new BadRequestException();
+        if (fechaFinalizacion == null || fechaFinalizacion.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'fechaFinalizacion' es nulo o está vacío.");
+            throw new BadRequestException("El parámetro 'fechaFinalizacion' no puede ser nulo o vacío.");
         }
 
         try {
@@ -146,16 +145,14 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                     .setParameter("fechaFinalizacion", parseo)
                     .getResultList();
         } catch (ParseException e) {
-            LOGGER.log(Level.INFO, "Error al intentar parsear la fechaFinalizacion");
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "Error al intentar parsear la fechaFinalizacion", e);
+            throw new BadRequestException("El parámetro 'fechaFinalizacion' tiene un formato inválido.");
         } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun mantenimiento con esa fecha de finalizacion");
-            throw new NotFoundException(e);
-        } catch (InternalServerErrorException e) {
-            LOGGER.log(Level.INFO,
-                    "ERROR 500, Error interno en el servidor",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "No se ha encontrado ningun mantenimiento con esa fecha de finalizacion", e);
+            throw new NotFoundException("No se ha encontrado ningun mantenimiento con esa fecha de finalización.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por fecha", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta de fecha de finalización.", e);
         }
         return mantenimientos;
     }
@@ -164,7 +161,7 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @GET
     @Path("mantenimientoExitoso/{mantenimientoExitoso}")
     @Produces({"application/xml"})
-    public List<Mantenimiento> filtrarPorMantenimientoExitoso(@PathParam("mantenimientoExitoso") Boolean mantenimientoExitoso) throws NotFoundException ,InternalServerErrorException {
+    public List<Mantenimiento> filtrarPorMantenimientoExitoso(@PathParam("mantenimientoExitoso") Boolean mantenimientoExitoso) throws NotFoundException, InternalServerErrorException {
         List<Mantenimiento> mantenimientos = null;
         try {
             LOGGER.log(Level.INFO, "Buscando mantenimientos en los que el mantenimiento haya sido exitoso", mantenimientoExitoso);
@@ -172,13 +169,11 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                     .setParameter("mantenimientoExitoso", mantenimientoExitoso)
                     .getResultList();
         } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun mantenimiento con un mantenimiento exitoso");
-            throw new NotFoundException(e);
-        } catch (InternalServerErrorException e) {
-            LOGGER.log(Level.INFO,
-                    "ERROR 500, Error interno en el servidor",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "No se ha encontrado ningun mantenimiento con un mantenimiento exitoso", e);
+            throw new NotFoundException("No se ha encontrado ningun mantenimiento exitoso.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por mantenimiento exitoso", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta de mantenimiento exitoso.", e);
         }
         return mantenimientos;
     }
@@ -187,12 +182,12 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @GET
     @Path("fechaFin/{fechaFin}")
     @Produces({"application/xml"})
-    public List<Mantenimiento> filtrarPorFechaFinParaAbajo(@PathParam("fechaFin") String fechaFin) throws NotFoundException ,InternalServerErrorException {
+    public List<Mantenimiento> filtrarPorFechaFinParaAbajo(@PathParam("fechaFin") String fechaFin) throws NotFoundException, InternalServerErrorException {
         List<Mantenimiento> mantenimientos = null;
 
         if (fechaFin == null) {
             LOGGER.log(Level.SEVERE, "La fechaFin es nula");
-            throw new BadRequestException();
+            throw new BadRequestException("La fechaFin es nula.");
         }
         try {
             // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
@@ -204,16 +199,14 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                     .setParameter("fechaFin", parseo)
                     .getResultList();
         } catch (ParseException e) {
-            LOGGER.log(Level.INFO, "Error al intentar parsear la fechaFin");
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "Error al intentar parsear la fechaFin", e);
+            throw new InternalServerErrorException("Error al procesar la fecha 'fechaFin'.");
         } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun mantenimiento por debajo de la fecha introducida");
-            throw new NotFoundException(e);
-        } catch (InternalServerErrorException e) {
-            LOGGER.log(Level.INFO,
-                    "ERROR 500, Error interno en el servidor",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "No se ha encontrado ningun mantenimiento anterior a la fecha introducida", e);
+            throw new NotFoundException("No se ha encontrado ningun mantenimiento anterior a la fecha introducida.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por fechaFin", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta de fechaFin.", e);
         }
         return mantenimientos;
     }
@@ -222,12 +215,12 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @GET
     @Path("idVehiculo/{idVehiculo}")
     @Produces({"application/xml"})
-    public List<Mantenimiento> filtrarPorIdVehiculo(@PathParam("idVehiculo") Long idVehiculo) throws NotFoundException ,InternalServerErrorException {
+    public List<Mantenimiento> filtrarPorIdVehiculo(@PathParam("idVehiculo") Long idVehiculo) throws NotFoundException, InternalServerErrorException {
         List<Mantenimiento> mantenimientos = null;
 
         if (idVehiculo == null) {
             LOGGER.log(Level.SEVERE, "El id del Vehiculo es nulo");
-            throw new BadRequestException();
+            throw new BadRequestException("El id del vehiculo no puede ser nulo.");
         }
 
         try {
@@ -236,13 +229,11 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
                     .setParameter("idVehiculo", idVehiculo)
                     .getResultList();
         } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "ERROR 404, El id de vehiculo introducido no tiene ningun mantenimiento asociado");
-            throw new NotFoundException(e);
-        } catch (InternalServerErrorException e) {
-            LOGGER.log(Level.INFO,
-                    "ERROR 500, Error interno en el servidor",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.INFO, "El id de vehiculo introducido no tiene ningun mantenimiento asociado", e);
+            throw new NotFoundException("No se ha encontrado ningun mantenimiento para el vehículo con ID " + idVehiculo);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por idVehiculo", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta de mantenimientos por vehículo.", e);
         }
         return mantenimientos;
     }
