@@ -132,7 +132,7 @@ public class EmailServicio {
         EmailServicio emailServicio = new EmailServicio();
 
         // Datos del correo
-        String receiver = "gorkxtartanga@gmail.com";  // Correo del destinatario
+        String receiver = "criceyt@gmail.com";  // Correo del destinatario
         String password = "1234abcd";  // Contraseña generada o cualquier mensaje adicional
         String subject = "Bienvenido a nuestro servicio";  // Asunto del correo
         String body = "Hola,\n\nEsta es tu contraseña generada: " + password;  // Contenido del correo
