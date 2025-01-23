@@ -1,24 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package service;
 
 import G3.crud.entities.Vehiculo;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//import static G3.crud.entities.Vehiculo_.km;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -26,18 +24,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-/**
- *
- * @author 2dam
- */
-
-
-
 @Stateless
 @Path("vehiculo")
 public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
 
-    
     private Logger LOGGER = Logger.getLogger(VehiculoFacadeREST.class.getName());
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")
@@ -50,28 +40,66 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void create(Vehiculo entity) {
-        super.create(entity);
+    public void create(Vehiculo entity) throws BadRequestException, InternalServerErrorException {
+        try {
+            if (entity == null) {
+                LOGGER.log(Level.SEVERE, "El objeto Vehiculo recibido es nulo.");
+                throw new BadRequestException("El objeto Vehiculo es nulo.");
+            }
+            super.create(entity);
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.SEVERE, "Error al crear el vehículo", e);
+            throw new InternalServerErrorException("Error interno al crear el vehículo.", e);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Vehiculo entity) {
-        super.edit(entity);
+    public void edit(@PathParam("id") Long id, Vehiculo entity) throws BadRequestException, NotFoundException, InternalServerErrorException {
+        try {
+            if (entity == null || id == null) {
+                LOGGER.log(Level.SEVERE, "El objeto Vehiculo o el ID recibido es nulo.");
+                throw new BadRequestException("El objeto Vehiculo o el ID es nulo.");
+            }
+            Vehiculo existingVehiculo = super.find(id);
+            if (existingVehiculo == null) {
+                LOGGER.log(Level.SEVERE, "No se encuentra el vehículo con ID " + id);
+                throw new NotFoundException("Vehículo no encontrado.");
+            }
+            super.edit(entity);
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.SEVERE, "Error al editar el vehículo con ID " + id, e);
+            throw new InternalServerErrorException("Error interno al editar el vehículo con ID " + id, e);
+        }
     }
 
     @DELETE
     @Path("{id}")
-    public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+    public void remove(@PathParam("id") Long id) throws NotFoundException, InternalServerErrorException {
+        try {
+            Vehiculo existingVehiculo = super.find(id);
+            if (existingVehiculo == null) {
+                LOGGER.log(Level.SEVERE, "No se encuentra el vehículo con ID " + id);
+                throw new NotFoundException("Vehículo no encontrado.");
+            }
+            super.remove(existingVehiculo);
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.SEVERE, "Error al eliminar el vehículo con ID " + id, e);
+            throw new InternalServerErrorException("Error interno al eliminar el vehículo con ID " + id, e);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Vehiculo find(@PathParam("id") Long id) {
-        return super.find(id);
+    public Vehiculo find(@PathParam("id") Long id) throws NotFoundException {
+        Vehiculo vehiculo = super.find(id);
+        if (vehiculo == null) {
+            LOGGER.log(Level.SEVERE, "No se encuentra el vehículo con ID " + id);
+            throw new NotFoundException("Vehículo no encontrado.");
+        }
+        return vehiculo;
     }
 
     @GET
@@ -94,127 +122,103 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-    
-    // Filtrado de marca
+
+    // Filtrado por Marca
     @GET
     @Path("marca/{marca}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoMarcaVehiculo(@PathParam("marca") String marca) {
-        List<Vehiculo> vehiculos=null;
+    public List<Vehiculo> filtradoPorMarca(@PathParam("marca") String marca) throws NotFoundException, InternalServerErrorException {
+        List<Vehiculo> vehiculos = null;
+        if (marca == null || marca.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'marca' es nulo o vacío.");
+            throw new BadRequestException("El parámetro 'marca' no puede ser nulo o vacío.");
+        }
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",marca);
-             vehiculos=em.createNamedQuery("filtradoMarcaVehiculo")
-                     .setParameter("marca", marca)
-                     .getResultList();
+            LOGGER.log(Level.INFO, "Buscando vehículos por marca", marca);
+            vehiculos = em.createNamedQuery("filtradoPorMarcaVehiculo")
+                    .setParameter("marca", marca)
+                    .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo con esa marca", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo con esa marca.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por marca", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por marca.", e);
         }
         return vehiculos;
     }
-    
-    // Filtrado de color
+
+    // Filtrado por Color
     @GET
     @Path("color/{color}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoColorVehiculo(@PathParam("color") String color) {
-        List<Vehiculo> vehiculos=null;
+    public List<Vehiculo> filtradoPorColor(@PathParam("color") String color) throws NotFoundException, InternalServerErrorException {
+        List<Vehiculo> vehiculos = null;
+        if (color == null || color.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'color' es nulo o vacío.");
+            throw new BadRequestException("El parámetro 'color' no puede ser nulo o vacío.");
+        }
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",color);
-             vehiculos=em.createNamedQuery("filtradoColorVehiculo")
-                     .setParameter("color", color)
-                     .getResultList();
+            LOGGER.log(Level.INFO, "Buscando vehículos por color", color);
+            vehiculos = em.createNamedQuery("filtradoPorColorVehiculo")
+                    .setParameter("color", color)
+                    .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo con ese color", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo con ese color.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por color", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por color.", e);
         }
         return vehiculos;
     }
-    
-    // Filtrado de precio
+
+    // Filtrado por Precio
     @GET
     @Path("precio/{precio}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtradoPrecioVehiculo(@PathParam("precio") Integer precio) {
-        List<Vehiculo> vehiculos=null;
-        try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",precio);
-             vehiculos=em.createNamedQuery("filtradoPrecioVehiculo")
-                     .setParameter("precio", precio)
-                     .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+    public List<Vehiculo> filtradoPorPrecio(@PathParam("precio") Integer precio) throws NotFoundException, InternalServerErrorException {
+        List<Vehiculo> vehiculos = null;
+        if (precio == null) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'precio' es nulo.");
+            throw new BadRequestException("El parámetro 'precio' no puede ser nulo.");
         }
-        return vehiculos;
-    }
-    
-    // Filtrado de potencia
-    @GET
-    @Path("potencia/{potencia}")
-    @Produces({"application/xml"})
-    public List<Vehiculo> filtradoPotenciaVehiculo(@PathParam("potencia") Integer potencia) {
-        List<Vehiculo> vehiculos=null;
         try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",potencia);
-             vehiculos=em.createNamedQuery("filtradoPotenciaVehiculo")
-                     .setParameter("potencia", potencia)
-                     .getResultList();
+            LOGGER.log(Level.INFO, "Buscando vehículos por precio", precio);
+            vehiculos = em.createNamedQuery("filtradoPorPrecioVehiculo")
+                    .setParameter("precio", precio)
+                    .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo con ese precio", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo con ese precio.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por precio", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por precio.", e);
         }
         return vehiculos;
     }
 
-    // Filtrado de km
+    // Filtrado por Kilómetros
     @GET
     @Path("km/{km}")
     @Produces({"application/xml"})
-    public List<Vehiculo> filtrarPorKm(@PathParam("km") Integer km) {
-        List<Vehiculo> vehiculos=null;
-        try {
-            LOGGER.log(Level.INFO,"UserRESTful service: find users by profile {0}.",km);
-             vehiculos=em.createNamedQuery("filtradoKmVehiculo")
-                     .setParameter("km", km)
-                     .getResultList();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
-        }
-        return vehiculos;
-    }
-    
-    // Filtrado por DatePicker
-    @GET
-    @Path("fechaAlta/{fechaAlta}")
-    @Produces({"application/xml"})
-    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAltaString) {
+    public List<Vehiculo> filtradoPorKm(@PathParam("km") Integer km) throws NotFoundException, InternalServerErrorException {
         List<Vehiculo> vehiculos = null;
+        if (km == null) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'km' es nulo.");
+            throw new BadRequestException("El parámetro 'km' no puede ser nulo.");
+        }
         try {
-            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date parseo = sdf.parse(fechaAltaString);
-
-            LOGGER.log(Level.INFO, "UserRESTful service: find users by profile {0}.", parseo);
-            vehiculos = em.createNamedQuery("filtradoDatePicker")
-                    .setParameter("fechaAlta", parseo)
+            LOGGER.log(Level.INFO, "Buscando vehículos por kilómetros", km);
+            vehiculos = em.createNamedQuery("filtradoPorKmVehiculo")
+                    .setParameter("km", km)
                     .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo con ese kilometraje", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo con ese kilometraje.");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE,
-                    "UserRESTful service: Exception reading users by profile, {0}",
-                    e.getMessage());
-            throw new InternalServerErrorException(e);
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por kilómetros", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por kilómetros.", e);
         }
         return vehiculos;
     }
@@ -223,5 +227,5 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     protected EntityManager getEntityManager() {
         return em;
     }
-
 }
+

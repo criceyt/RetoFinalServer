@@ -2,6 +2,7 @@ package G3.crud.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
@@ -20,11 +21,11 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC"),
     @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.marca = :marca"),
     @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC"),
-    @NamedQuery(name = "filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
+    @NamedQuery(name ="filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
 })
 
 @Entity
-@Table(name = "vehiculo", schema = "pruebadb")
+@Table(name = "vehiculo", schema = "concesionariodb")
 @XmlRootElement
 public class Vehiculo implements Serializable {
 
@@ -41,6 +42,7 @@ public class Vehiculo implements Serializable {
     private Date fechaAlta;
     private String tipoVehiculo;
 
+
     // Relacion Vehiculo a Mantenimiento
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
     private Set<Mantenimiento> mantenimientos;
@@ -56,7 +58,7 @@ public class Vehiculo implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "vehiculo_Proveedor", schema = "pruebadb",
+            name = "vehiculo_Proveedor", schema = "concesionariodb",
             joinColumns = @JoinColumn(name = "vehiculos_idVehiculo", referencedColumnName = "idVehiculo"),
             inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName = "idProveedor"))
     private Set<Proveedor> proveedores;
@@ -155,5 +157,9 @@ public class Vehiculo implements Serializable {
     public void setTipoVehiculo(String tipoVehiculo) {
         this.tipoVehiculo = tipoVehiculo;
     }
+
+
+    
+    
 
 }

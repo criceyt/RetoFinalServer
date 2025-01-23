@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author 2dam
  */
 @Entity
-@Table(name="compra",schema="pruebadb")
+@Table(name="compra",schema="concesionariodb")
 @XmlRootElement
 public class Compra implements Serializable {
 
