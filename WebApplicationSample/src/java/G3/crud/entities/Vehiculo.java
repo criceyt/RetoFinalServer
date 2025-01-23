@@ -2,6 +2,7 @@ package G3.crud.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
@@ -40,6 +41,7 @@ public class Vehiculo implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date fechaAlta;
     private String tipoVehiculo;
+    private Blob imagen;
 
     // Relacion Vehiculo a Mantenimiento
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
@@ -155,5 +157,15 @@ public class Vehiculo implements Serializable {
     public void setTipoVehiculo(String tipoVehiculo) {
         this.tipoVehiculo = tipoVehiculo;
     }
+
+    public Blob getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(Blob imagen) {
+        this.imagen = imagen;
+    }
+    
+    
 
 }

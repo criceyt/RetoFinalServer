@@ -6,6 +6,7 @@
 package G3.crud.entities;
 
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
