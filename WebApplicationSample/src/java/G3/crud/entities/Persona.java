@@ -5,6 +5,7 @@
  */
 package G3.crud.entities;
 
+import G3.crud.crypto.Hash;
 import G3.crud.crypto.Servidor;
 import java.io.Serializable;
 import java.sql.Blob;
@@ -119,16 +120,25 @@ public class Persona implements Serializable {
         return contrasena;
     }
 
-    public void setContrasena(String contrasena) {
-        // Si la contraseña recibida está cifrada en Base64, la desencriptamos
-        if (Servidor.esBase64Valido(contrasena)) {
-            // Desencriptar la contraseña
-            this.contrasena = Servidor.desencriptarContraseña(contrasena);
+public void setContrasena(String contrasena) {
+    // Si la contraseña recibida está cifrada en Base64, la desencriptamos
+    if (Servidor.esBase64Valido(contrasena)) {
+        // Desencriptar la contraseña
+        String decryptedPassword = Servidor.desencriptarContraseña(contrasena);
+
+        // Verificar que la desencriptación fue exitosa
+        if (decryptedPassword != null && !decryptedPassword.isEmpty()) {
+            // Hashear la contraseña desencriptada
+            this.contrasena = Hash.hashText(decryptedPassword);
         } else {
-            // Si no está cifrada, simplemente asignamos el valor
-            this.contrasena = contrasena;
+            throw new IllegalArgumentException("Error al desencriptar la contraseña");
         }
+    } else {
+        // Si no está cifrada, simplemente asignamos el valor hasheado
+        this.contrasena = Hash.hashText(contrasena);
     }
+}
+
     
 
     @Override
