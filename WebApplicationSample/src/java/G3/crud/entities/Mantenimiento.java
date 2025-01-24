@@ -53,8 +53,7 @@ public class Mantenimiento implements Serializable {
     
     // Atributos
     @Id     
-    @GeneratedValue(strategy = GenerationType.AUTO)
-     Long idMantenimiento;
+    Long idMantenimiento;
     private String descripcion;
     
     @Temporal(TemporalType.DATE)

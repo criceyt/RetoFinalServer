@@ -1,6 +1,5 @@
 package G3.crud.entities;
 
-import java.sql.Blob;
 import java.util.Date;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
@@ -13,7 +12,6 @@ public abstract class Persona_ {
 	public static volatile SingularAttribute<Persona, Integer> codigoPostal;
 	public static volatile SingularAttribute<Persona, Date> fechaRegistro;
 	public static volatile SingularAttribute<Persona, String> direccion;
-	public static volatile SingularAttribute<Persona, Blob> imagen;
 	public static volatile SingularAttribute<Persona, String> contrasena;
 	public static volatile SingularAttribute<Persona, String> nombreCompleto;
 	public static volatile SingularAttribute<Persona, Integer> telefono;
