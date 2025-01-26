@@ -1,6 +1,7 @@
 package service;
 
 import G3.crud.entities.Vehiculo;
+import static G3.crud.entities.Vehiculo_.fechaAlta;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -219,6 +220,40 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por kilómetros", e);
             throw new InternalServerErrorException("Error interno al procesar la consulta por kilómetros.", e);
+        }
+        return vehiculos;
+    }
+    
+    // Filtrado por DatePicker para Proveedores
+    @GET
+    @Path("fechaAlta/{fechaAlta}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAlta) throws NotFoundException, InternalServerErrorException {
+        List<Vehiculo> vehiculos = null;
+
+        if (fechaAlta == null || fechaAlta.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'ultimaActividad' es nulo o está vacío.");
+            throw new BadRequestException("El parámetro 'ultimaActividad' no puede ser nulo o vacío.");
+        }
+
+        try {
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(fechaAlta);
+
+            LOGGER.log(Level.INFO, "Buscando proveedores cuya última actividad sea igual a la introducida", parseo);
+            vehiculos = em.createNamedQuery("filtradoDatePickerVehiculo")
+                    .setParameter("fechaAlta", parseo)
+                    .getResultList();
+        } catch (ParseException e) {
+            LOGGER.log(Level.INFO, "Error al intentar parsear la ultimaActividad", e);
+            throw new InternalServerErrorException("Error al parsear la fecha.", e);
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun proveedor con esa fecha de ultimaActividad", e);
+            throw new NotFoundException("Proveedor no encontrado con esa fecha.");
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO, "ERROR 500, Error interno en el servidor", e.getMessage());
+            throw new InternalServerErrorException("Error interno en el servidor.", e);
         }
         return vehiculos;
     }

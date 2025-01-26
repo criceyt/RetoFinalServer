@@ -20,7 +20,7 @@ public abstract class Vehiculo_ {
 	public static volatile SetAttribute<Vehiculo, Mantenimiento> mantenimientos;
 	public static volatile SingularAttribute<Vehiculo, String> color;
 	public static volatile SingularAttribute<Vehiculo, Date> fechaAlta;
-	public static volatile SingularAttribute<Vehiculo, String> tipoVehiculo;
+	public static volatile SingularAttribute<Vehiculo, TipoVehiculo> tipoVehiculo;
 	public static volatile SingularAttribute<Vehiculo, String> modelo;
 
 }
