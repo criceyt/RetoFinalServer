@@ -10,18 +10,19 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(Vehiculo.class)
 public abstract class Vehiculo_ {
 
+	public static volatile SingularAttribute<Vehiculo, Integer> km;
+	public static volatile SingularAttribute<Vehiculo, Long> idVehiculo;
+	public static volatile SingularAttribute<Vehiculo, String> color;
+	public static volatile SingularAttribute<Vehiculo, Date> fechaAlta;
+	public static volatile SingularAttribute<Vehiculo, String> ruta;
+	public static volatile SingularAttribute<Vehiculo, String> modelo;
 	public static volatile SingularAttribute<Vehiculo, String> marca;
 	public static volatile SingularAttribute<Vehiculo, Integer> potencia;
 	public static volatile SetAttribute<Vehiculo, Proveedor> proveedores;
-	public static volatile SingularAttribute<Vehiculo, Integer> km;
 	public static volatile SingularAttribute<Vehiculo, Integer> precio;
 	public static volatile SetAttribute<Vehiculo, Compra> compras;
-	public static volatile SingularAttribute<Vehiculo, Long> idVehiculo;
 	public static volatile SetAttribute<Vehiculo, Mantenimiento> mantenimientos;
-	public static volatile SingularAttribute<Vehiculo, String> color;
-	public static volatile SingularAttribute<Vehiculo, Date> fechaAlta;
 	public static volatile SingularAttribute<Vehiculo, TipoVehiculo> tipoVehiculo;
-	public static volatile SingularAttribute<Vehiculo, String> modelo;
 
 }
 

@@ -34,6 +34,7 @@ public class Vehiculo implements Serializable {
     private String marca;
     private String modelo;
     private String color;
+    private String ruta;
     private Integer potencia;
     private Integer km;
     private Integer precio;
@@ -41,6 +42,7 @@ public class Vehiculo implements Serializable {
     private Date fechaAlta;
     @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
+    
 
     // Relacion Vehiculo a Mantenimiento
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
@@ -157,6 +159,12 @@ public class Vehiculo implements Serializable {
         this.tipoVehiculo = tipoVehiculo;
     }
 
-    
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
 
 }
