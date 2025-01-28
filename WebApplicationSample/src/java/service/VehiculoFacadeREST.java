@@ -210,7 +210,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por kilómetros", km);
-            vehiculos = em.createNamedQuery("filtradoPorKmVehiculo")
+            vehiculos = em.createNamedQuery("filtradoKmVehiculo")
                     .setParameter("km", km)
                     .getResultList();
         } catch (NoResultException e) {
