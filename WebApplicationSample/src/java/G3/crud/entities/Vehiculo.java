@@ -166,5 +166,4 @@ public class Vehiculo implements Serializable {
     public void setRuta(String ruta) {
         this.ruta = ruta;
     }
-
 }

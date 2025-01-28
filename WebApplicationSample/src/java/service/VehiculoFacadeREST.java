@@ -1,7 +1,6 @@
 package service;
 
 import G3.crud.entities.Vehiculo;
-import static G3.crud.entities.Vehiculo_.fechaAlta;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
