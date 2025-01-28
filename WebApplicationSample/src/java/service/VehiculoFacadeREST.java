@@ -135,7 +135,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por marca", marca);
-            vehiculos = em.createNamedQuery("filtradoPorMarcaVehiculo")
+            vehiculos = em.createNamedQuery("filtradoMarcaVehiculo")
                     .setParameter("marca", marca)
                     .getResultList();
         } catch (NoResultException e) {
@@ -160,7 +160,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por color", color);
-            vehiculos = em.createNamedQuery("filtradoPorColorVehiculo")
+            vehiculos = em.createNamedQuery("filtradoColorVehiculo")
                     .setParameter("color", color)
                     .getResultList();
         } catch (NoResultException e) {
@@ -185,7 +185,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por precio", precio);
-            vehiculos = em.createNamedQuery("filtradoPorPrecioVehiculo")
+            vehiculos = em.createNamedQuery("filtradoPrecioVehiculo")
                     .setParameter("precio", precio)
                     .getResultList();
         } catch (NoResultException e) {
@@ -210,7 +210,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por kilómetros", km);
-            vehiculos = em.createNamedQuery("filtradoPorKmVehiculo")
+            vehiculos = em.createNamedQuery("filtradoKmVehiculo")
                     .setParameter("km", km)
                     .getResultList();
         } catch (NoResultException e) {
@@ -223,9 +223,118 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         return vehiculos;
     }
 
+    // Filtrado por DatePicker para Proveedores
+    @GET
+    @Path("fechaAlta/{fechaAlta}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoDatePickerVehiculo(@PathParam("fechaAlta") String fechaAlta) throws NotFoundException, InternalServerErrorException {
+        List<Vehiculo> vehiculos = null;
+
+        if (fechaAlta == null || fechaAlta.isEmpty()) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'ultimaActividad' es nulo o está vacío.");
+            throw new BadRequestException("El parámetro 'ultimaActividad' no puede ser nulo o vacío.");
+        }
+
+        try {
+            // Parsear la fecha desde el String recibido en el formato 'yyyy-MM-dd'
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date parseo = sdf.parse(fechaAlta);
+
+            LOGGER.log(Level.INFO, "Buscando proveedores cuya última actividad sea igual a la introducida", parseo);
+            vehiculos = em.createNamedQuery("filtradoDatePickerVehiculo")
+                    .setParameter("fechaAlta", parseo)
+                    .getResultList();
+        } catch (ParseException e) {
+            LOGGER.log(Level.INFO, "Error al intentar parsear la ultimaActividad", e);
+            throw new InternalServerErrorException("Error al parsear la fecha.", e);
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "ERROR 404, No se ha encontrado ningun proveedor con esa fecha de ultimaActividad", e);
+            throw new NotFoundException("Proveedor no encontrado con esa fecha.");
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.INFO, "ERROR 500, Error interno en el servidor", e.getMessage());
+            throw new InternalServerErrorException("Error interno en el servidor.", e);
+        }
+        return vehiculos;
+    }
+
+    // Filtrado por Precio
+    @GET
+    @Path("precio/{minPrecio}/{maxPrecio}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoPorPrecio(
+            @PathParam("minPrecio") Integer minPrecio,
+            @PathParam("maxPrecio") Integer maxPrecio)
+            throws BadRequestException, NotFoundException, InternalServerErrorException {
+
+        List<Vehiculo> vehiculos = null;
+
+        // Validación de parámetros
+        if (minPrecio == null || maxPrecio == null) {
+            LOGGER.log(Level.SEVERE, "Los parámetros 'minPrecio' o 'maxPrecio' son nulos.");
+            throw new BadRequestException("Los parámetros 'minPrecio' y 'maxPrecio' no pueden ser nulos.");
+        }
+        if (minPrecio > maxPrecio) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'minPrecio' es mayor que 'maxPrecio'.");
+            throw new BadRequestException("El parámetro 'minPrecio' no puede ser mayor que 'maxPrecio'.");
+        }
+
+        try {
+            LOGGER.log(Level.INFO, "Buscando vehículos por precio entre {0} y {1}", new Object[]{minPrecio, maxPrecio});
+            vehiculos = em.createNamedQuery("filtradoBetweenPrecioVehiculo", Vehiculo.class)
+                    .setParameter("minPrecio", minPrecio)
+                    .setParameter("maxPrecio", maxPrecio)
+                    .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo en el rango de precios especificado.", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo en el rango de precios especificado.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por precio", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por precio.", e);
+        }
+
+        return vehiculos;
+    }
+
+    // Filtrado por Kilómetros
+    @GET
+    @Path("km/{minKm}/{maxKm}")
+    @Produces({"application/xml"})
+    public List<Vehiculo> filtradoPorKilometraje(
+            @PathParam("minKm") Integer minKm,
+            @PathParam("maxKm") Integer maxKm)
+            throws BadRequestException, NotFoundException, InternalServerErrorException {
+
+        List<Vehiculo> vehiculos = null;
+
+        // Validación de parámetros
+        if (minKm == null || maxKm == null) {
+            LOGGER.log(Level.SEVERE, "Los parámetros 'minKm' o 'maxKm' son nulos.");
+            throw new BadRequestException("Los parámetros 'minKm' y 'maxKm' no pueden ser nulos.");
+        }
+        if (minKm > maxKm) {
+            LOGGER.log(Level.SEVERE, "El parámetro 'minKm' es mayor que 'maxKm'.");
+            throw new BadRequestException("El parámetro 'minKm' no puede ser mayor que 'maxKm'.");
+        }
+
+        try {
+            LOGGER.log(Level.INFO, "Buscando vehículos por kilometraje entre {0} y {1}", new Object[]{minKm, maxKm});
+            vehiculos = em.createNamedQuery("filtradoBetweenKmVehiculo", Vehiculo.class)
+                    .setParameter("minKm", minKm)
+                    .setParameter("maxKm", maxKm)
+                    .getResultList();
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "No se ha encontrado ningún vehículo en el rango de kilometraje especificado.", e);
+            throw new NotFoundException("No se ha encontrado ningún vehículo en el rango de kilometraje especificado.");
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error inesperado al filtrar por kilometraje", e);
+            throw new InternalServerErrorException("Error interno al procesar la consulta por kilometraje.", e);
+        }
+
+        return vehiculos;
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
 }
-

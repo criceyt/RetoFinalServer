@@ -12,15 +12,27 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author ekain
  */
-
 @NamedQueries({
-    @NamedQuery(name="cargarVehiculos", query="SELECT a FROM Vehiculo a ORDER BY a.id DESC"),
-    @NamedQuery(name="filtradoKmVehiculo", query="SELECT a FROM Vehiculo a WHERE a.km <= :km ORDER BY a.km DESC"),
-    @NamedQuery(name="filtradoColorVehiculo", query="SELECT a FROM Vehiculo a WHERE a.color = :color"),
-    @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC"),
-    @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.marca = :marca"),
-    @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC"),
-    @NamedQuery(name ="filtradoDatePicker", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
+    @NamedQuery(
+            name = "filtradoBetweenPrecioVehiculo",
+            query = "SELECT a FROM Vehiculo a WHERE a.precio >= :minPrecio AND a.precio <= :maxPrecio ORDER BY a.precio ASC"
+    )
+    ,@NamedQuery(
+            name = "filtradoBetweenKmVehiculo",
+            query = "SELECT a FROM Vehiculo a WHERE a.km >= :minKm AND a.km <= :maxKm ORDER BY a.km ASC"
+    )
+    ,
+    @NamedQuery(name = "filtradoKmVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.km <= :km ORDER BY a.km DESC")
+    ,
+    @NamedQuery(name = "filtradoColorVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.color = :color")
+    ,
+    @NamedQuery(name = "filtradoPotenciaVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC")
+    ,
+    @NamedQuery(name = "filtradoMarcaVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.marca = :marca")
+    ,
+    @NamedQuery(name = "filtradoPrecioVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC")
+    ,
+    @NamedQuery(name = "filtradoDatePickerVehiculo", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
 })
 
 @Entity
@@ -34,15 +46,17 @@ public class Vehiculo implements Serializable {
     private String marca;
     private String modelo;
     private String color;
+    private String ruta;
     private Integer potencia;
     private Integer km;
     private Integer precio;
     @Temporal(TemporalType.DATE)
     private Date fechaAlta;
-    private String tipoVehiculo;
+    @Enumerated(EnumType.STRING)
+    private TipoVehiculo tipoVehiculo;
 
     // Relacion Vehiculo a Mantenimiento
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo")
     private Set<Mantenimiento> mantenimientos;
 
     @XmlTransient
@@ -74,7 +88,6 @@ public class Vehiculo implements Serializable {
     @OneToMany(cascade = ALL, mappedBy = "vehiculo", fetch = FetchType.EAGER)
     private Set<Compra> compras;
 
-    
     public Set<Compra> getCompras() {
         return compras;
     }
@@ -115,7 +128,7 @@ public class Vehiculo implements Serializable {
     public void setColor(String color) {
         this.color = color;
     }
-    
+
     public Integer getKm() {
         return km;
     }
@@ -123,7 +136,7 @@ public class Vehiculo implements Serializable {
     public void setKm(Integer km) {
         this.km = km;
     }
-    
+
     public Integer getPrecio() {
         return precio;
     }
@@ -148,12 +161,19 @@ public class Vehiculo implements Serializable {
         this.fechaAlta = fechaAlta;
     }
 
-    public String getTipoVehiculo() {
+    public TipoVehiculo getTipoVehiculo() {
         return tipoVehiculo;
     }
 
-    public void setTipoVehiculo(String tipoVehiculo) {
+    public void setTipoVehiculo(TipoVehiculo tipoVehiculo) {
         this.tipoVehiculo = tipoVehiculo;
     }
 
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
 }

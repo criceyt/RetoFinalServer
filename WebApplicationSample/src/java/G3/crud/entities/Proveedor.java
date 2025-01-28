@@ -1,5 +1,7 @@
 package G3.crud.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -31,9 +33,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "filtradoPorDatePickerProveedores", query = "SELECT a FROM Proveedor a WHERE FUNCTION('DATE', a.ultimaActividad) = FUNCTION('DATE', :ultimaActividad)")
     ,
     //@NamedQuery(name = "buscarProveedorPorFechaVehiculo", query = "SELECT p FROM Proveedor p " + "JOIN p.vehiculos v WHERE p.ultimaActividad = v.fechaAlta"),
-    @NamedQuery(name="filtradoPorNombre", query="SELECT a FROM Proveedor a WHERE a.nombreProveedor = :nombreProveedor ORDER BY a.nombreProveedor DESC"),
-    @NamedQuery(name="filtradoPorTipoVehiculo", query="SELECT a FROM Proveedor a WHERE a.tipoVehiculo = :tipoVehiculo ORDER BY a.tipoVehiculo DESC"),
-})
+    @NamedQuery(name = "filtradoPorNombre", query = "SELECT a FROM Proveedor a WHERE a.nombreProveedor = :nombreProveedor ORDER BY a.nombreProveedor DESC")
+    ,
+    @NamedQuery(name = "filtradoPorTipoVehiculo", query = "SELECT a FROM Proveedor a WHERE a.tipoVehiculo = :tipoVehiculo ORDER BY a.tipoVehiculo DESC"),})
 
 @XmlRootElement
 public class Proveedor implements Serializable {
@@ -52,6 +54,8 @@ public class Proveedor implements Serializable {
     private String especialidad;
 
     @Temporal(TemporalType.DATE)
+    @JsonSerialize(as = Date.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private Date ultimaActividad;
 
     // Relacion

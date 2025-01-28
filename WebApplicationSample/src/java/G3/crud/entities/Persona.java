@@ -6,6 +6,7 @@
 package G3.crud.entities;
 
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -20,6 +23,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author 2dam
  */
+
+@NamedQueries({
+   @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+})
+
+
 @Entity
 @Table(name="persona",schema="concesionariodb")
 @Inheritance(strategy = InheritanceType.JOINED)
