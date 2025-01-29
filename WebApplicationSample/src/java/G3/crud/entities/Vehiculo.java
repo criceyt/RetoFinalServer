@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,6 +35,7 @@ public class Vehiculo implements Serializable {
     private String marca;
     private String modelo;
     private String color;
+    private String ruta;
     private Integer potencia;
     private Integer km;
     private Integer precio;
@@ -41,6 +43,7 @@ public class Vehiculo implements Serializable {
     private Date fechaAlta;
     @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
+    
 
     // Relacion Vehiculo a Mantenimiento
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
@@ -62,7 +65,6 @@ public class Vehiculo implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName = "idProveedor"))
     private Set<Proveedor> proveedores;
 
-    @XmlTransient
     public Set<Proveedor> getProveedores() {
         return proveedores;
     }
@@ -124,7 +126,7 @@ public class Vehiculo implements Serializable {
     public void setKm(Integer km) {
         this.km = km;
     }
-    
+
     public Integer getPrecio() {
         return precio;
     }
@@ -156,7 +158,12 @@ public class Vehiculo implements Serializable {
     public void setTipoVehiculo(TipoVehiculo tipoVehiculo) {
         this.tipoVehiculo = tipoVehiculo;
     }
-
     
+    public String getRuta() {
+        return ruta;
+    }
 
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
 }

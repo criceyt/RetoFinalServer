@@ -1,7 +1,6 @@
 package service;
 
 import G3.crud.entities.Vehiculo;
-import static G3.crud.entities.Vehiculo_.fechaAlta;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -211,7 +210,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         try {
             LOGGER.log(Level.INFO, "Buscando vehículos por kilómetros", km);
-            vehiculos = em.createNamedQuery("filtradoPorKmVehiculo")
+            vehiculos = em.createNamedQuery("filtradoKmVehiculo")
                     .setParameter("km", km)
                     .getResultList();
         } catch (NoResultException e) {

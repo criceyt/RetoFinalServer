@@ -50,7 +50,7 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void edit(@PathParam("id") Long id, Usuario entity) {
+    public void edit(@PathParam("id") Long id, Usuario entity) { 
         super.edit(entity);
     }
 
@@ -112,7 +112,5 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
-    }
-    
+    }   
 }
-

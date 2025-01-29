@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     ,
    @NamedQuery(name = "findEmailPersona", query = "SELECT p FROM Persona p WHERE p.email = :email")
     ,
-   @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+  @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+
 })
 
 @Entity
@@ -139,8 +140,8 @@ public class Persona implements Serializable {
             this.contrasena = Hash.hashText(contrasena);
         }
     }
-    
-    public void setContrasenaReset(String constrasena){
+
+    public void setContrasenaReset(String constrasena) {
         this.contrasena = contrasena;
     }
 

@@ -2,9 +2,12 @@ package service;
 
 import G3.crud.crypto.EmailServicio;
 import G3.crud.crypto.Hash;
+import G3.crud.crypto.Servidor;
 import G3.crud.entities.Persona;
 import G3.crud.entities.Trabajador;
 import G3.crud.entities.Usuario;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Security;
 import java.util.List;
 import java.util.logging.Level;
@@ -25,6 +28,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -145,14 +149,25 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
     @GET
     @Path("inicioSesionPersona/{email}/{contrasena}")
-    @Produces({"application/xml"})
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
+        // Decodificar manualmente si es necesario
+        try {
+            email = URLDecoder.decode(email, "UTF-8");
+            contrasena = URLDecoder.decode(contrasena, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Manejo de la excepción si la codificación no es compatible
+            LOGGER.log(Level.SEVERE, "Error decodificando los parámetros", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al decodificar los parámetros").build();
+        }
+
         Persona persona = null;
         try {
-
             LOGGER.log(Level.INFO, "UserRESTful service: find user by email and password");
+            contrasena = Servidor.desencriptarContraseña(contrasena);
+            contrasena = Hash.hashText(contrasena);  // Hashear la contraseña
 
-            // Realizar la consulta en la base de datos (utilizando Named Query en JPA)
+            // Realizar la consulta en la base de datos
             persona = (Persona) em.createNamedQuery("inicioSesionPersona")
                     .setParameter("email", email)
                     .setParameter("contrasena", contrasena)
@@ -160,7 +175,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
             LOGGER.log(Level.INFO, "Clase devuelta por JPA: " + persona.getClass());
 
-            // Si la persona es un Usuario o Trabajador, se devuelve el tipo correspondiente
+            // Determinar el tipo de persona y devolverlo
             if (persona instanceof Usuario) {
                 return Response.ok((Usuario) persona).build();  // Retorna Usuario
             } else if (persona instanceof Trabajador) {
@@ -169,16 +184,14 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
         } catch (NoResultException e) {
             LOGGER.log(Level.INFO, "UserRESTful service: No user found with provided email and password");
-            // Si no se encuentra el usuario, se devuelve un 404
             return Response.status(Response.Status.NOT_FOUND).entity("No user found").build();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "UserRESTful service: Exception reading user by email and password", e);
-            // En caso de error, se lanza un 500 (Error del servidor)
             throw new InternalServerErrorException(e);
         }
 
-        // En caso de que no sea ni Usuario ni Trabajador, se devuelve una Persona general
-        return Response.ok(persona).build();  // Retorna Persona por defecto
+        // Si no es un Usuario ni un Trabajador, devolver una Persona general
+        return Response.ok(persona).build();
     }
 
     @Override
