@@ -5,6 +5,8 @@
  */
 package G3.crud.entities;
 
+import G3.crud.crypto.Hash;
+import G3.crud.crypto.Servidor;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Date;
@@ -23,14 +25,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author 2dam
  */
-
 @NamedQueries({
-   @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+    @NamedQuery(name = "reiniciarContrasena", query = "UPDATE Persona p SET p.contrasena = :nuevaContrasena WHERE p.email = :email")
+    ,
+   @NamedQuery(name = "findEmailPersona", query = "SELECT p FROM Persona p WHERE p.email = :email")
+    ,
+  @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+
 })
 
-
 @Entity
-@Table(name="persona",schema="concesionariodb")
+@Table(name = "persona", schema = "concesionariodb")
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 public class Persona implements Serializable {
@@ -39,7 +44,7 @@ public class Persona implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idPersona;
-    
+
     private String dni;
     private String email;
     private String nombreCompleto;
@@ -48,7 +53,6 @@ public class Persona implements Serializable {
     private Integer telefono;
     private String direccion;
     private String contrasena;
-    
 
     public Long getId() {
         return idPersona;
@@ -119,9 +123,27 @@ public class Persona implements Serializable {
     }
 
     public void setContrasena(String contrasena) {
+        // Si la contraseña recibida está cifrada en Base64, la desencriptamos
+        if (Servidor.esBase64Valido(contrasena)) {
+            // Desencriptar la contraseña
+            String decryptedPassword = Servidor.desencriptarContraseña(contrasena);
+
+            // Verificar que la desencriptación fue exitosa
+            if (decryptedPassword != null && !decryptedPassword.isEmpty()) {
+                // Hashear la contraseña desencriptada
+                this.contrasena = Hash.hashText(decryptedPassword);
+            } else {
+                throw new IllegalArgumentException("Error al desencriptar la contraseña");
+            }
+        } else {
+            // Si no está cifrada, simplemente asignamos el valor hasheado
+            this.contrasena = Hash.hashText(contrasena);
+        }
+    }
+
+    public void setContrasenaReset(String constrasena) {
         this.contrasena = contrasena;
     }
-    
 
     @Override
     public int hashCode() {
@@ -147,5 +169,5 @@ public class Persona implements Serializable {
     public String toString() {
         return "G3.crud.entities.Persona[ idPersona=" + idPersona + " ]";
     }
-    
+
 }
