@@ -31,9 +31,6 @@ public class Usuario extends Persona implements Serializable {
 
     // Atributos
     private boolean premium;
-    
-    
-    private ArrayList<Vehiculo> tusVehiculos = new ArrayList<>(); // Se inicializa aquí
 
     // Relación de Usuario a Compra
     @OneToMany(cascade = ALL, mappedBy = "usuario", fetch = FetchType.EAGER)
@@ -60,13 +57,5 @@ public class Usuario extends Persona implements Serializable {
 
     public void setCompras(Set<Compra> compras) {
         this.compras = compras;
-    }
-
-    public ArrayList<Vehiculo> getTusVehiculos() {
-        return tusVehiculos;
-    }
-
-    public void setTusVehiculos(ArrayList<Vehiculo> tusVehiculos) {
-        this.tusVehiculos = tusVehiculos;
     }
 }

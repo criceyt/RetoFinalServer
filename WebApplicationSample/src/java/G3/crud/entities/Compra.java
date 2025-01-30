@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -30,10 +32,13 @@ public class Compra implements Serializable {
  
     @EmbeddedId
     private CompraId idCompra;
+    
+    
     @MapsId("idPersona")
     @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
     @ManyToOne
     private Usuario usuario;
+    
     @MapsId("idVehiculo")
     @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
     @ManyToOne
@@ -44,6 +49,8 @@ public class Compra implements Serializable {
     private String matricula;
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCompra;
+    
+    
     
     
     public CompraId getIdCompra() {

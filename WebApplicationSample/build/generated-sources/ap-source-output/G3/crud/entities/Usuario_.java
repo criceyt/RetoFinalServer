@@ -1,6 +1,5 @@
 package G3.crud.entities;
 
-import java.util.ArrayList;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -12,7 +11,6 @@ public abstract class Usuario_ extends G3.crud.entities.Persona_ {
 
 	public static volatile SetAttribute<Usuario, Compra> compras;
 	public static volatile SingularAttribute<Usuario, Boolean> premium;
-	public static volatile SingularAttribute<Usuario, ArrayList> tusVehiculos;
 
 }
 

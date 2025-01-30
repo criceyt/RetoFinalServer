@@ -47,9 +47,9 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
         if (idPersona != null && !idPersona.isEmpty()) {
             key.setIdPersona(new java.lang.Long(idPersona.get(0)));
         }
-        java.util.List<String> vehiculoId = map.get("vehiculoId");
-        if (vehiculoId != null && !vehiculoId.isEmpty()) {
-            key.setVehiculoId(new java.lang.Long(vehiculoId.get(0)));
+        java.util.List<String> idVehiculo = map.get("idVehiculo");
+        if (idVehiculo != null && !idVehiculo.isEmpty()) {
+            key.setIdVehiculo(new java.lang.Long(idVehiculo.get(0)));
         }
         return key;
     }
@@ -62,6 +62,7 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Compra entity) {
+        System.out.println("aaaaaaaaaaaa");
         super.create(entity);
     }
 
@@ -112,5 +113,4 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
 }
