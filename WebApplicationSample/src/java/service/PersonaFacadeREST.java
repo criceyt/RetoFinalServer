@@ -6,6 +6,8 @@ import G3.crud.crypto.Servidor;
 import G3.crud.entities.Persona;
 import G3.crud.entities.Trabajador;
 import G3.crud.entities.Usuario;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Security;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,63 +39,63 @@ import javax.ws.rs.core.Response;
 @Stateless
 @Path("persona")
 public class PersonaFacadeREST extends AbstractFacade<Persona> {
-    
+
     @PersistenceContext(unitName = "WebApplicationSamplePU")
     private EntityManager em;
     private static final Logger LOGGER = Logger.getLogger(PersonaFacadeREST.class.getName());
-    
+
     public PersonaFacadeREST() {
         super(Persona.class);
     }
-    
+
     @POST
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Persona entity) {
         super.create(entity);
     }
-    
+
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Persona entity) {
         super.edit(entity);
     }
-    
+
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
         super.remove(super.find(id));
     }
-    
+
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Persona find(@PathParam("id") Long id) {
         return super.find(id);
     }
-    
+
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Persona> findAll() {
         return super.findAll();
     }
-    
+
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Persona> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
         return super.findRange(new int[]{from, to});
     }
-    
+
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
     }
-    
+
     @GET
     @Path("reiniciarContrasena/{email}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -109,7 +111,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             LOGGER.log(Level.INFO, "UserRESTful service: invalid email {0}.", email);
             return Response.status(Response.Status.BAD_REQUEST).entity("Los parámetros no pueden estar vacíos").build();
         }
-        
+
         try {
             query = em.createNamedQuery("findEmailPersona");
             query.setParameter("email", email);
@@ -118,7 +120,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             if (pers == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("El email no está asociado a ninguna persona").build();
             }
-            
+
             LOGGER.log(Level.INFO, "UserRESTful service: resetting password for {0}.", email);
 
             // Generamos la nueva contraseña
@@ -135,7 +137,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
             // Retornamos una respuesta exitosa
             return Response.ok("La contraseña ha sido restablecida y se ha enviado un correo con la nueva contraseña").build();
-            
+
         } catch (NotFoundException ex) {
             LOGGER.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity("El correo no coincide con ninguna persona").build();
@@ -144,6 +146,53 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error interno del servidor").build();
         }
     }
+/*
+    @GET
+    @Path("inicioSesionPersona/{email}/{contrasena}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
+        // Decodificar manualmente si es necesario
+        try {
+            email = URLDecoder.decode(email, "UTF-8");
+            contrasena = URLDecoder.decode(contrasena, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Manejo de la excepción si la codificación no es compatible
+            LOGGER.log(Level.SEVERE, "Error decodificando los parámetros", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al decodificar los parámetros").build();
+        }
+
+        Persona persona = null;
+        try {
+            LOGGER.log(Level.INFO, "UserRESTful service: find user by email and password");
+            contrasena = Servidor.desencriptarContraseña(contrasena);
+            contrasena = Hash.hashText(contrasena);  // Hashear la contraseña
+
+            // Realizar la consulta en la base de datos
+            persona = (Persona) em.createNamedQuery("inicioSesionPersona")
+                    .setParameter("email", email)
+                    .setParameter("contrasena", contrasena)
+                    .getSingleResult();
+
+            LOGGER.log(Level.INFO, "Clase devuelta por JPA: " + persona.getClass());
+
+            // Determinar el tipo de persona y devolverlo
+            if (persona instanceof Usuario) {
+                return Response.ok((Usuario) persona).build();  // Retorna Usuario
+            } else if (persona instanceof Trabajador) {
+                return Response.ok((Trabajador) persona).build();  // Retorna Trabajador
+            }
+
+        } catch (NoResultException e) {
+            LOGGER.log(Level.INFO, "UserRESTful service: No user found with provided email and password");
+            return Response.status(Response.Status.NOT_FOUND).entity("No user found").build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception reading user by email and password", e);
+            throw new InternalServerErrorException(e);
+        }
+
+        // Si no es un Usuario ni un Trabajador, devolver una Persona general
+        return Response.ok(persona).build();
+    }*/
     
     @GET
     @Path("inicioSesionPersona/{email}/{contrasena}")
@@ -182,7 +231,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         // En caso de que no sea ni Usuario ni Trabajador, se devuelve una Persona general
         return Response.ok(persona).build();  // Retorna Persona por defecto
     }
-    
+
     @Override
     protected EntityManager getEntityManager() {
         return em;

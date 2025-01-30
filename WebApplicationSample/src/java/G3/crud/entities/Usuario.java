@@ -31,15 +31,18 @@ public class Usuario extends Persona implements Serializable {
 
     // Atributos
     private boolean premium;
+    
+    
     private ArrayList<Vehiculo> tusVehiculos = new ArrayList<>(); // Se inicializa aquí
 
     // Relación de Usuario a Compra
     @OneToMany(cascade = ALL, mappedBy = "usuario", fetch = FetchType.EAGER)
     private Set<Compra> compras;
+   
 
     public Usuario() {
         // Aseguramos que el ArrayList esté siempre inicializado
-        this.tusVehiculos = new ArrayList<>();
+    //    this.tusVehiculos = new ArrayList<>();
     }
 
     // Getters y setters

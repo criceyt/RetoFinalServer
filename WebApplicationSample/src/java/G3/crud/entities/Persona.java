@@ -8,7 +8,6 @@ package G3.crud.entities;
 import G3.crud.crypto.Hash;
 import G3.crud.crypto.Servidor;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
