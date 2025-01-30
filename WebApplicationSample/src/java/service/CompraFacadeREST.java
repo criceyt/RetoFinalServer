@@ -27,7 +27,7 @@ import javax.ws.rs.core.PathSegment;
  * @author 2dam
  */
 @Stateless
-@Path("g3.crud.entities.compra")
+@Path("compra")
 public class CompraFacadeREST extends AbstractFacade<Compra> {
 
     @PersistenceContext(unitName = "WebApplicationSamplePU")

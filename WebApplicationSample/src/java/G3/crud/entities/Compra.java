@@ -110,5 +110,4 @@ public class Compra implements Serializable {
     public String toString() {
         return "G3.crud.entities.Compra[ idCompra=" + idCompra + " ]";
     }
-    
 }
