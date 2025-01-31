@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -51,6 +52,7 @@ public class Usuario extends Persona implements Serializable {
         this.premium = premium;
     }
 
+    @XmlTransient
     public Set<Compra> getCompras() {
         return compras;
     }

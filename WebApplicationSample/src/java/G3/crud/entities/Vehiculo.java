@@ -77,7 +77,7 @@ public class Vehiculo implements Serializable {
     @OneToMany(cascade = ALL, mappedBy = "vehiculo", fetch = FetchType.EAGER)
     private Set<Compra> compras;
 
-    
+    @XmlTransient
     public Set<Compra> getCompras() {
         return compras;
     }
