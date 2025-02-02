@@ -60,7 +60,7 @@ public class Servidor {
 
     public static void main(String[] args) {
         // Ejemplo de recibir la contraseña cifrada (simulada)
-        String encryptedPassword = "AcIyZv47BTEYQFWNuAywwVxhU58H2klrGhuIJcmKo8eLRkBMe44cN81zD0V72ITToZZINNciEi%2FoJJa5QbsjbYvWo0sdIVmuWEicTnxJD3jKP4qttDmeKdEYMphETk0WS4X1eV63hB7WuQjBlfW3DClS1BDEuXCZLXCCSoQFlEY%3D"; // Aquí iría la contraseña cifrada enviada desde el cliente
+        String encryptedPassword = "Vaj2Y9qOx9QKTTINPi3Tn5qMwylI9wBt5QYjHWXueP8rhSI7fQs/lVuCgZ+DeD2lnPHy+bLuLZJUAOZitqwuKUU9molV5iAzBa6aCz2G76Q9ncikiEpHnSjHknfsOWyTQD3X36XlHYztLl5c3F6Ke2mX0Hhta1zph6BDnZIB390="; // Aquí iría la contraseña cifrada enviada desde el cliente
         String decryptedPassword = Servidor.desencriptarContraseña(encryptedPassword);
         if (decryptedPassword != null) {
             System.out.println("Contraseña desencriptada: " + decryptedPassword);

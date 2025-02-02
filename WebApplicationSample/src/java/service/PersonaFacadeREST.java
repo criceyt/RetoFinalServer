@@ -6,6 +6,7 @@ import G3.crud.crypto.Servidor;
 import G3.crud.entities.Persona;
 import G3.crud.entities.Persona_;
 import G3.crud.entities.Trabajador;
+import G3.crud.entities.UpdatePasswordRequest;
 import G3.crud.entities.Usuario;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -61,7 +62,9 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Persona entity) {
+
         super.edit(entity);
+
     }
 
     @DELETE
@@ -104,10 +107,9 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response resetPassword(@PathParam("email") String email) {
         Query query;
-        Persona pers;  // Usamos Persona en lugar de Usuario
-        String contrasena;
-        String subject, text;
-        EmailServicio emailServicio = new EmailServicio();  // Instanciamos el servicio de email
+        Persona pers;
+        String nuevaContrasena;
+        EmailServicio emailServicio = new EmailServicio();
 
         if (email == null || email.isEmpty()) {
             LOGGER.log(Level.INFO, "UserRESTful service: invalid email {0}.", email);
@@ -117,7 +119,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         try {
             query = em.createNamedQuery("findEmailPersona");
             query.setParameter("email", email);
-            pers = (Persona) query.getSingleResult();  // Casting a Persona
+            pers = (Persona) query.getSingleResult();
 
             if (pers == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("El email no está asociado a ninguna persona").build();
@@ -125,27 +127,81 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
             LOGGER.log(Level.INFO, "UserRESTful service: resetting password for {0}.", email);
 
-            // Generamos la nueva contraseña
-            contrasena = EmailServicio.generateRandomPassword().toString();  // Usamos el generador de contraseñas
-            pers.setContrasenaReset(Hash.hashText(contrasena));  // Establecemos la nueva contraseña en la persona
-            super.edit(pers);  // Guardamos la persona actualizada
+            // Generamos y hasheamos la nueva contraseña
+            nuevaContrasena = EmailServicio.generateRandomPassword().toString();
 
-            // Definimos el asunto y el cuerpo del correo
-            subject = "Solicitud de restablecimiento de contraseña";
-            text = "Su nueva contraseña es: " + contrasena;
+            // Guardamos la nueva contraseña en la base de datos
+            pers.setContrasena(nuevaContrasena);
+            em.merge(pers);
+            em.flush(); // Sincronizamos los cambios con la base de datos
 
-            // Enviamos el correo al usuario con la nueva contraseña
-            emailServicio.sendEmail(pers.getEmail(), contrasena, text, subject);
+            // 📧 **Enviar email con la nueva contraseña**
+            String subject = "Restablecimiento de Contraseña";
+            String body = "Hola " + pers.getNombreCompleto() + ",\n\n"
+                    + "Tu contraseña ha sido restablecida correctamente.\n"
+                    + "Tu nueva contraseña es: " + nuevaContrasena + "\n\n"
+                    + "Por seguridad, te recomendamos cambiarla lo antes posible.\n\n"
+                    + "Saludos,\nEl equipo de soporte.";
 
-            // Retornamos una respuesta exitosa
-            return Response.ok("La contraseña ha sido restablecida y se ha enviado un correo con la nueva contraseña").build();
+            boolean correoEnviado = emailServicio.sendEmail(email, nuevaContrasena, body, subject);
 
-        } catch (NotFoundException ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            if (!correoEnviado) {
+                LOGGER.log(Level.SEVERE, "UserRESTful service: Error sending email to {0}.", email);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("La contraseña ha sido restablecida, pero hubo un error al enviar el correo.")
+                        .build();
+            }
+
+            return Response.ok("La contraseña ha sido restablecida y enviada al correo.").build();
+
+        } catch (NoResultException ex) {
+            LOGGER.log(Level.SEVERE, "UserRESTful service: No user found with email {0}.", email);
             return Response.status(Response.Status.NOT_FOUND).entity("El correo no coincide con ninguna persona").build();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "UserRESTful service: Error updating password for {0}.", email);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error interno del servidor").build();
+        }
+    }
+
+    @PUT
+    @Path("updatePassword")
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response updatePassword(UpdatePasswordRequest request) {
+        try {
+            // Buscar al usuario por email
+            Persona usuario = (Persona) em.createNamedQuery("findEmailPersona")
+                    .setParameter("email", request.getEmail())
+                    .getSingleResult();
+
+            if (usuario == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("<message>Usuario no encontrado</message>")
+                        .build();
+            }
+
+            // Encriptar la nueva contraseña
+            String hashedPassword = Hash.hashText(request.getNewPassword());
+
+            // Actualizar la contraseña en la base de datos
+            em.createNamedQuery("reiniciarContrasena")
+                    .setParameter("nuevaContrasena", hashedPassword)
+                    .setParameter("email", request.getEmail())
+                    .executeUpdate();
+
+            // Enviar correo de notificación
+            EmailServicio emailServicio = new EmailServicio();
+            String subject = "Cambio de contraseña exitoso";
+            String body = "Hola, " + usuario.getNombreCompleto() + ".\n\n"
+                    + "Tu contraseña ha sido cambiada exitosamente.\n"
+                    + "Si no has realizado este cambio, por favor contacta con soporte.";
+            emailServicio.sendEmail(request.getEmail(), null, body, subject);
+
+            return Response.ok("<message>Contraseña actualizada con éxito</message>").build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("<message>Error al actualizar la contraseña</message>")
+                    .build();
         }
     }
 
@@ -189,44 +245,6 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         return Response.ok(persona).build();
     }
 
-    /*
-    @GET
-    @Path("inicioSesionPersona/{email}/{contrasena}")
-    @Produces({"application/xml"})
-    public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
-        Persona persona = null;
-        try {
-
-            LOGGER.log(Level.INFO, "UserRESTful service: find user by email and password");
-
-            // Realizar la consulta en la base de datos (utilizando Named Query en JPA)
-            persona = (Persona) em.createNamedQuery("inicioSesionPersona")
-                    .setParameter("email", email)
-                    .setParameter("contrasena", contrasena)
-                    .getSingleResult();
-
-            LOGGER.log(Level.INFO, "Clase devuelta por JPA: " + persona.getClass());
-
-            // Si la persona es un Usuario o Trabajador, se devuelve el tipo correspondiente
-            if (persona instanceof Usuario) {
-                return Response.ok((Usuario) persona).build();  // Retorna Usuario
-            } else if (persona instanceof Trabajador) {
-                return Response.ok((Trabajador) persona).build();  // Retorna Trabajador
-            }
-
-        } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "UserRESTful service: No user found with provided email and password");
-            // Si no se encuentra el usuario, se devuelve un 404
-            return Response.status(Response.Status.NOT_FOUND).entity("No user found").build();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception reading user by email and password", e);
-            // En caso de error, se lanza un 500 (Error del servidor)
-            throw new InternalServerErrorException(e);
-        }
-
-        // En caso de que no sea ni Usuario ni Trabajador, se devuelve una Persona general
-        return Response.ok(persona).build();  // Retorna Persona por defecto
-    }*/
     @Override
     protected EntityManager getEntityManager() {
         return em;

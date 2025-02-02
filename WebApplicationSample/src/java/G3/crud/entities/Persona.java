@@ -121,24 +121,27 @@ public class Persona implements Serializable {
         return contrasena;
     }
 
-    public void setContrasena(String contrasena) {
-        // Si la contraseña recibida está cifrada en Base64, la desencriptamos
-        if (Servidor.esBase64Valido(contrasena)) {
-            // Desencriptar la contraseña
-            String decryptedPassword = Servidor.desencriptarContraseña(contrasena);
-
-            // Verificar que la desencriptación fue exitosa
-            if (decryptedPassword != null && !decryptedPassword.isEmpty()) {
-                // Hashear la contraseña desencriptada
-                this.contrasena = Hash.hashText(decryptedPassword);
-            } else {
-                throw new IllegalArgumentException("Error al desencriptar la contraseña");
-            }
-        } else {
-            // Si no está cifrada, simplemente asignamos el valor hasheado
-            this.contrasena = Hash.hashText(contrasena);
-        }
+  public void setContrasena(String contrasena) {
+    if (contrasena == null || contrasena.isEmpty()) {
+        throw new IllegalArgumentException("La contraseña no puede estar vacía");
     }
+
+    // Si la contraseña es Base64 válida, intentamos descifrarla
+    if (Servidor.esBase64Valido(contrasena)) {
+        String decryptedPassword = Servidor.desencriptarContraseña(contrasena);
+        
+        if (decryptedPassword == null || decryptedPassword.isEmpty()) {
+            throw new IllegalArgumentException("Error al desencriptar la contraseña");
+        }
+        
+        // Hasheamos la contraseña descifrada y la guardamos
+        this.contrasena = Hash.hashText(decryptedPassword);
+    } else {
+        // Si la contraseña no está cifrada, asumimos que ya está en texto plano y solo la hasheamos
+        this.contrasena = Hash.hashText(contrasena);
+    }
+}
+
 
     public void setContrasenaReset(String constrasena) {
         this.contrasena = contrasena;
