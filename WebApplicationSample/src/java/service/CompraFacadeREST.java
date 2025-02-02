@@ -7,13 +7,22 @@ package service;
 
 import G3.crud.entities.Compra;
 import G3.crud.entities.CompraId;
+import G3.crud.entities.Usuario;
+import G3.crud.entities.Vehiculo;
+import static com.sun.xml.ws.spi.db.BindingContextFactory.LOGGER;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -21,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -47,9 +57,9 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
         if (idPersona != null && !idPersona.isEmpty()) {
             key.setIdPersona(new java.lang.Long(idPersona.get(0)));
         }
-        java.util.List<String> vehiculoId = map.get("vehiculoId");
-        if (vehiculoId != null && !vehiculoId.isEmpty()) {
-            key.setVehiculoId(new java.lang.Long(vehiculoId.get(0)));
+        java.util.List<String> idVehiculo = map.get("idVehiculo");
+        if (idVehiculo != null && !idVehiculo.isEmpty()) {
+            key.setIdVehiculo(new java.lang.Long(idVehiculo.get(0)));
         }
         return key;
     }
@@ -112,5 +122,4 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
 }

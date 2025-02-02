@@ -26,12 +26,12 @@ public class CompraId implements Serializable {
         this.idPersona = idPersona;
     }
 
-    public Long getVehiculoId() {
+    public Long getIdVehiculo() {
         return idVehiculo;
     }
 
-    public void setVehiculoId(Long vehiculoId) {
-        this.idVehiculo = vehiculoId;
+    public void setIdVehiculo(Long idVehiculo) {
+        this.idVehiculo = idVehiculo;
     }
 
     @Override

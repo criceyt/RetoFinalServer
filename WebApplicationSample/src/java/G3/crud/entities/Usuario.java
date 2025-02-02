@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -31,9 +32,6 @@ public class Usuario extends Persona implements Serializable {
 
     // Atributos
     private boolean premium;
-    
-    
-    private ArrayList<Vehiculo> tusVehiculos = new ArrayList<>(); // Se inicializa aquí
 
     // Relación de Usuario a Compra
     @OneToMany(cascade = ALL, mappedBy = "usuario", fetch = FetchType.EAGER)
@@ -54,19 +52,12 @@ public class Usuario extends Persona implements Serializable {
         this.premium = premium;
     }
 
+    @XmlTransient
     public Set<Compra> getCompras() {
         return compras;
     }
 
     public void setCompras(Set<Compra> compras) {
         this.compras = compras;
-    }
-
-    public ArrayList<Vehiculo> getTusVehiculos() {
-        return tusVehiculos;
-    }
-
-    public void setTusVehiculos(ArrayList<Vehiculo> tusVehiculos) {
-        this.tusVehiculos = tusVehiculos;
     }
 }

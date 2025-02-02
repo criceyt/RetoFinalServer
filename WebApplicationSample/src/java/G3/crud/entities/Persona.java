@@ -121,7 +121,7 @@ public class Persona implements Serializable {
         return contrasena;
     }
 
-  public void setContrasena(String contrasena) {
+public void setContrasena(String contrasena) {
     if (contrasena == null || contrasena.isEmpty()) {
         throw new IllegalArgumentException("La contraseña no puede estar vacía");
     }
@@ -141,7 +141,6 @@ public class Persona implements Serializable {
         this.contrasena = Hash.hashText(contrasena);
     }
 }
-
 
     public void setContrasenaReset(String constrasena) {
         this.contrasena = contrasena;

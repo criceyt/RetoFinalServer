@@ -4,14 +4,12 @@ import G3.crud.crypto.EmailServicio;
 import G3.crud.crypto.Hash;
 import G3.crud.crypto.Servidor;
 import G3.crud.entities.Persona;
-import G3.crud.entities.Persona_;
 import G3.crud.entities.Trabajador;
 import G3.crud.entities.UpdatePasswordRequest;
 import G3.crud.entities.Usuario;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Security;
-import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,9 +60,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Persona entity) {
-
         super.edit(entity);
-
     }
 
     @DELETE
@@ -101,7 +97,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         return String.valueOf(super.count());
     }
 
-    @GET
+   @GET
     @Path("reiniciarContrasena/{email}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -205,7 +201,8 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         }
     }
 
-    @GET
+
+        @GET
     @Path("inicioSesionPersona/{email}/{contrasena}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
@@ -244,6 +241,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         // Si no es un Usuario ni un Trabajador, devolver una Persona general
         return Response.ok(persona).build();
     }
+
 
     @Override
     protected EntityManager getEntityManager() {

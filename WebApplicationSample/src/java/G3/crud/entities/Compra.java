@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author 2dam
  */
+
 @Entity
 @Table(name="compra",schema="concesionariodb")
 @XmlRootElement
@@ -30,10 +33,13 @@ public class Compra implements Serializable {
  
     @EmbeddedId
     private CompraId idCompra;
+    
+    
     @MapsId("idPersona")
     @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
     @ManyToOne
     private Usuario usuario;
+    
     @MapsId("idVehiculo")
     @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
     @ManyToOne
@@ -46,6 +52,8 @@ public class Compra implements Serializable {
     private Date fechaCompra;
     
     
+    
+    
     public CompraId getIdCompra() {
         return idCompra;
     }
@@ -54,6 +62,7 @@ public class Compra implements Serializable {
         this.idCompra = idCompra;
     }
 
+    
     public Usuario getUsuario() {
         return usuario;
     }
