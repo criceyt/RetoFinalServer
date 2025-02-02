@@ -29,51 +29,55 @@ public class EmailServicio {
      * @param body el mensaje en si.
      * @param subject el asunto del correo
      */
-    public void sendEmail(String receiver, String contrasena, String body, String subject) {
-        try {
-            // Cargar propiedades de credenciales desencriptadas
-            Properties properties = new Properties();
-            InputStream input = new ByteArrayInputStream(sym.decryptText("abcd*1234"));
-            properties.load(input);
+public boolean sendEmail(String receiver, String contrasena, String body, String subject) {
+    try {
+        // Cargar propiedades de credenciales desencriptadas
+        Properties properties = new Properties();
+        InputStream input = new ByteArrayInputStream(sym.decryptText("abcd*1234"));
+        properties.load(input);
 
-            transmitter = properties.getProperty("TRANSMITTER");
-            emailkey = properties.getProperty("EMAILKEY");
+        transmitter = properties.getProperty("TRANSMITTER");
+        emailkey = properties.getProperty("EMAILKEY");
 
-            LOGGER.info("Credenciales obtenidas para el envio de correo.");
+        LOGGER.info("Credenciales obtenidas para el envio de correo.");
 
-            if (transmitter == null || emailkey == null) {
-                LOGGER.severe("Las credenciales TRANSMITTER o EMAILKEY son nulas. No se puede enviar el correo.");
-                return;
-            }
-
-            // Configuración del servidor SMTP
-            Properties mailProperties = new Properties();
-            mailProperties.put("mail.smtp.auth", "true");
-            mailProperties.put("mail.smtp.starttls.enable", "true");
-            mailProperties.put("mail.smtp.host", "smtp.gmail.com");
-            mailProperties.put("mail.smtp.port", "587");
-
-            // Crear sesión de correo
-            Session session = Session.getInstance(mailProperties);
-
-            // Crear el mensaje
-            MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(transmitter));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
-            message.setSubject(subject);
-            message.setText(body);
-
-            // Enviar el correo
-            LOGGER.info("Enviando correo a: " + receiver);
-            Transport.send(message, transmitter, emailkey);
-            LOGGER.info("Correo enviado correctamente a: " + receiver);
-
-        } catch (MessagingException e) {
-            LOGGER.log(Level.SEVERE, "Error al enviar el correo: {0}", e.getMessage());
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error al cargar las propiedades: {0}", e.getMessage());
+        if (transmitter == null || emailkey == null) {
+            LOGGER.severe("Las credenciales TRANSMITTER o EMAILKEY son nulas. No se puede enviar el correo.");
+            return false;
         }
+
+        // Configuración del servidor SMTP
+        Properties mailProperties = new Properties();
+        mailProperties.put("mail.smtp.auth", "true");
+        mailProperties.put("mail.smtp.starttls.enable", "true");
+        mailProperties.put("mail.smtp.host", "smtp.gmail.com");
+        mailProperties.put("mail.smtp.port", "587");
+
+        // Crear sesión de correo
+        Session session = Session.getInstance(mailProperties);
+
+        // Crear el mensaje
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(transmitter));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+        message.setSubject(subject);
+        message.setText(body);
+
+        // Enviar el correo
+        LOGGER.info("Enviando correo a: " + receiver);
+        Transport.send(message, transmitter, emailkey);
+        LOGGER.info("Correo enviado correctamente a: " + receiver);
+
+        return true;  // El correo se envió correctamente
+    } catch (MessagingException e) {
+        LOGGER.log(Level.SEVERE, "Error al enviar el correo: {0}", e.getMessage());
+        return false;  // Error al enviar el correo
+    } catch (IOException e) {
+        LOGGER.log(Level.SEVERE, "Error al cargar las propiedades: {0}", e.getMessage());
+        return false;  // Error al cargar las propiedades
     }
+}
+
 
     /**
      * Generador de contraseñas para los usuarios.

@@ -5,6 +5,7 @@ import G3.crud.crypto.Hash;
 import G3.crud.crypto.Servidor;
 import G3.crud.entities.Persona;
 import G3.crud.entities.Trabajador;
+import G3.crud.entities.UpdatePasswordRequest;
 import G3.crud.entities.Usuario;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -96,16 +97,15 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         return String.valueOf(super.count());
     }
 
-    @GET
+   @GET
     @Path("reiniciarContrasena/{email}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response resetPassword(@PathParam("email") String email) {
         Query query;
-        Persona pers;  // Usamos Persona en lugar de Usuario
-        String contrasena;
-        String subject, text;
-        EmailServicio emailServicio = new EmailServicio();  // Instanciamos el servicio de email
+        Persona pers;
+        String nuevaContrasena;
+        EmailServicio emailServicio = new EmailServicio();
 
         if (email == null || email.isEmpty()) {
             LOGGER.log(Level.INFO, "UserRESTful service: invalid email {0}.", email);
@@ -115,7 +115,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         try {
             query = em.createNamedQuery("findEmailPersona");
             query.setParameter("email", email);
-            pers = (Persona) query.getSingleResult();  // Casting a Persona
+            pers = (Persona) query.getSingleResult();
 
             if (pers == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("El email no está asociado a ninguna persona").build();
@@ -123,48 +123,96 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
 
             LOGGER.log(Level.INFO, "UserRESTful service: resetting password for {0}.", email);
 
-            // Generamos la nueva contraseña
-            contrasena = EmailServicio.generateRandomPassword().toString();  // Usamos el generador de contraseñas
-            pers.setContrasenaReset(Hash.hashText(contrasena));  // Establecemos la nueva contraseña en la persona
-            super.edit(pers);  // Guardamos la persona actualizada
+            // Generamos y hasheamos la nueva contraseña
+            nuevaContrasena = EmailServicio.generateRandomPassword().toString();
 
-            // Definimos el asunto y el cuerpo del correo
-            subject = "Solicitud de restablecimiento de contraseña";
-            text = "Su nueva contraseña es: " + contrasena;
+            // Guardamos la nueva contraseña en la base de datos
+            pers.setContrasena(nuevaContrasena);
+            em.merge(pers);
+            em.flush(); // Sincronizamos los cambios con la base de datos
 
-            // Enviamos el correo al usuario con la nueva contraseña
-            emailServicio.sendEmail(pers.getEmail(), contrasena, text, subject);
+            // 📧 **Enviar email con la nueva contraseña**
+            String subject = "Restablecimiento de Contraseña";
+            String body = "Hola " + pers.getNombreCompleto() + ",\n\n"
+                    + "Tu contraseña ha sido restablecida correctamente.\n"
+                    + "Tu nueva contraseña es: " + nuevaContrasena + "\n\n"
+                    + "Por seguridad, te recomendamos cambiarla lo antes posible.\n\n"
+                    + "Saludos,\nEl equipo de soporte.";
 
-            // Retornamos una respuesta exitosa
-            return Response.ok("La contraseña ha sido restablecida y se ha enviado un correo con la nueva contraseña").build();
+            boolean correoEnviado = emailServicio.sendEmail(email, nuevaContrasena, body, subject);
 
-        } catch (NotFoundException ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            if (!correoEnviado) {
+                LOGGER.log(Level.SEVERE, "UserRESTful service: Error sending email to {0}.", email);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("La contraseña ha sido restablecida, pero hubo un error al enviar el correo.")
+                        .build();
+            }
+
+            return Response.ok("La contraseña ha sido restablecida y enviada al correo.").build();
+
+        } catch (NoResultException ex) {
+            LOGGER.log(Level.SEVERE, "UserRESTful service: No user found with email {0}.", email);
             return Response.status(Response.Status.NOT_FOUND).entity("El correo no coincide con ninguna persona").build();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception updating password for {0}.", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "UserRESTful service: Error updating password for {0}.", email);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error interno del servidor").build();
         }
     }
 
-    @GET
+    @PUT
+    @Path("updatePassword")
+    @Consumes(MediaType.APPLICATION_XML)
+    public Response updatePassword(UpdatePasswordRequest request) {
+        try {
+            // Buscar al usuario por email
+            Persona usuario = (Persona) em.createNamedQuery("findEmailPersona")
+                    .setParameter("email", request.getEmail())
+                    .getSingleResult();
+
+            if (usuario == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("<message>Usuario no encontrado</message>")
+                        .build();
+            }
+
+            // Encriptar la nueva contraseña
+            String hashedPassword = Hash.hashText(request.getNewPassword());
+
+            // Actualizar la contraseña en la base de datos
+            em.createNamedQuery("reiniciarContrasena")
+                    .setParameter("nuevaContrasena", hashedPassword)
+                    .setParameter("email", request.getEmail())
+                    .executeUpdate();
+
+            // Enviar correo de notificación
+            EmailServicio emailServicio = new EmailServicio();
+            String subject = "Cambio de contraseña exitoso";
+            String body = "Hola, " + usuario.getNombreCompleto() + ".\n\n"
+                    + "Tu contraseña ha sido cambiada exitosamente.\n"
+                    + "Si no has realizado este cambio, por favor contacta con soporte.";
+            emailServicio.sendEmail(request.getEmail(), null, body, subject);
+
+            return Response.ok("<message>Contraseña actualizada con éxito</message>").build();
+
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("<message>Error al actualizar la contraseña</message>")
+                    .build();
+        }
+    }
+
+
+        @GET
     @Path("inicioSesionPersona/{email}/{contrasena}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
-        // Decodificar manualmente si es necesario
-        try {
-            email = URLDecoder.decode(email, "UTF-8");
-            contrasena = URLDecoder.decode(contrasena, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // Manejo de la excepción si la codificación no es compatible
-            LOGGER.log(Level.SEVERE, "Error decodificando los parámetros", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al decodificar los parámetros").build();
-        }
 
         Persona persona = null;
         try {
             LOGGER.log(Level.INFO, "UserRESTful service: find user by email and password");
-            //contrasena = Servidor.desencriptarContraseña(contrasena);
+            contrasena = URLDecoder.decode(contrasena, "UTF-8");
+            contrasena = contrasena.replace(" ", "+");
+            contrasena = Servidor.desencriptarContraseña(contrasena);
             contrasena = Hash.hashText(contrasena);  // Hashear la contraseña
 
             // Realizar la consulta en la base de datos
@@ -193,6 +241,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         // Si no es un Usuario ni un Trabajador, devolver una Persona general
         return Response.ok(persona).build();
     }
+
 
     @Override
     protected EntityManager getEntityManager() {
