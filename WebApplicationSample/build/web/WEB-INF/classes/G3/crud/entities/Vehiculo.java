@@ -13,15 +13,20 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author ekain
  */
-
 @NamedQueries({
-    @NamedQuery(name="cargarVehiculos", query="SELECT a FROM Vehiculo a ORDER BY a.id DESC"),
-    @NamedQuery(name="filtradoKmVehiculo", query="SELECT a FROM Vehiculo a WHERE a.km <= :km ORDER BY a.km DESC"),
-    @NamedQuery(name="filtradoColorVehiculo", query="SELECT a FROM Vehiculo a WHERE a.color = :color"),
-    @NamedQuery(name="filtradoPotenciaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC"),
-    @NamedQuery(name="filtradoMarcaVehiculo", query="SELECT a FROM Vehiculo a WHERE a.marca = :marca"),
-    @NamedQuery(name="filtradoPrecioVehiculo", query="SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC"),
-    @NamedQuery(name ="filtradoDatePickerVehiculo", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
+    @NamedQuery(name = "cargarVehiculos", query = "SELECT a FROM Vehiculo a ORDER BY a.id DESC")
+    ,
+    @NamedQuery(name = "filtradoKmVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.km <= :km ORDER BY a.km DESC")
+    ,
+    @NamedQuery(name = "filtradoColorVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.color = :color")
+    ,
+    @NamedQuery(name = "filtradoPotenciaVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.potencia <= :potencia ORDER BY a.potencia DESC")
+    ,
+    @NamedQuery(name = "filtradoMarcaVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.marca = :marca")
+    ,
+    @NamedQuery(name = "filtradoPrecioVehiculo", query = "SELECT a FROM Vehiculo a WHERE a.precio <= :precio ORDER BY a.precio DESC")
+    ,
+    @NamedQuery(name = "filtradoDatePickerVehiculo", query = "SELECT a FROM Vehiculo a WHERE FUNCTION('DATE', a.fechaAlta) = FUNCTION('DATE', :fechaAlta)")
 })
 
 @Entity
@@ -43,10 +48,9 @@ public class Vehiculo implements Serializable {
     private Date fechaAlta;
     @Enumerated(EnumType.STRING)
     private TipoVehiculo tipoVehiculo;
-    
 
     // Relacion Vehiculo a Mantenimiento
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo" )
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo")
     private Set<Mantenimiento> mantenimientos;
 
     @XmlTransient
@@ -58,7 +62,7 @@ public class Vehiculo implements Serializable {
         this.mantenimientos = mantenimientos;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "vehiculo_Proveedor", schema = "concesionariodb",
             joinColumns = @JoinColumn(name = "vehiculos_idVehiculo", referencedColumnName = "idVehiculo"),
@@ -118,7 +122,7 @@ public class Vehiculo implements Serializable {
     public void setColor(String color) {
         this.color = color;
     }
-    
+
     public Integer getKm() {
         return km;
     }
@@ -158,7 +162,7 @@ public class Vehiculo implements Serializable {
     public void setTipoVehiculo(TipoVehiculo tipoVehiculo) {
         this.tipoVehiculo = tipoVehiculo;
     }
-    
+
     public String getRuta() {
         return ruta;
     }

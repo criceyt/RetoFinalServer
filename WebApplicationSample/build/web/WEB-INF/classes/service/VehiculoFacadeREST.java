@@ -106,21 +106,36 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Vehiculo> findAll() {
-        return super.findAll();
+        try {
+            return super.findAll();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Vehiculo> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     // Filtrado por Marca
@@ -222,7 +237,7 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         }
         return vehiculos;
     }
-    
+
     // Filtrado por DatePicker para Proveedores
     @GET
     @Path("fechaAlta/{fechaAlta}")
@@ -262,4 +277,3 @@ public class VehiculoFacadeREST extends AbstractFacade<Vehiculo> {
         return em;
     }
 }
-

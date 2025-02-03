@@ -29,9 +29,9 @@ import javax.ws.rs.core.Response;
 
 /**
  * Clase que proporciona la lógica para interactuar con la entidad Proveedor.
- * Permite realizar operaciones CRUD sobre los proveedores, así como consultas 
+ * Permite realizar operaciones CRUD sobre los proveedores, así como consultas
  * avanzadas utilizando filtros.
- * 
+ *
  * @author 2dam
  */
 @Stateless
@@ -116,21 +116,36 @@ public class ProveedorFacadeREST extends AbstractFacade<Proveedor> {
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Proveedor> findAll() {
-        return super.findAll();
+        try {
+            return super.findAll();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "ProveedorFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Proveedor> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "ProveedorFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "ProveedorFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     // Filtrado por DatePicker para Proveedores

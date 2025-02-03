@@ -113,14 +113,24 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Mantenimiento> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "MantenimientoFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "MantenimientoFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     // Filtrado por DatePicker para Mantenimientos
@@ -243,4 +253,3 @@ public class MantenimientoFacadeREST extends AbstractFacade<Mantenimiento> {
         return em;
     }
 }
-

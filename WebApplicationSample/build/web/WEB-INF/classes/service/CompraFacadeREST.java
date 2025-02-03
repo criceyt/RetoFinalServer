@@ -7,22 +7,16 @@ package service;
 
 import G3.crud.entities.Compra;
 import G3.crud.entities.CompraId;
-import G3.crud.entities.Usuario;
-import G3.crud.entities.Vehiculo;
 import static com.sun.xml.ws.spi.db.BindingContextFactory.LOGGER;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -30,7 +24,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -72,50 +65,85 @@ public class CompraFacadeREST extends AbstractFacade<Compra> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Compra entity) {
-        super.create(entity);
+        try {
+            super.create(entity);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") PathSegment id, Compra entity) {
-        super.edit(entity);
+        try {
+            super.edit(entity);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") PathSegment id) {
-        G3.crud.entities.CompraId key = getPrimaryKey(id);
-        super.remove(super.find(key));
+        try {
+            G3.crud.entities.CompraId key = getPrimaryKey(id);
+            super.remove(super.find(key));
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Compra find(@PathParam("id") PathSegment id) {
-        G3.crud.entities.CompraId key = getPrimaryKey(id);
-        return super.find(key);
+        try {
+            G3.crud.entities.CompraId key = getPrimaryKey(id);
+            return super.find(key);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Compra> findAll() {
-        return super.findAll();
+        try {
+            return super.findAll();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Compra> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "CompraFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @Override

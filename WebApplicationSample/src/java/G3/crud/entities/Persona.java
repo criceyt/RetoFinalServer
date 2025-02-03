@@ -29,7 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     ,
    @NamedQuery(name = "findEmailPersona", query = "SELECT p FROM Persona p WHERE p.email = :email")
     ,
-  @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena")
+  @NamedQuery(name = "inicioSesionPersona", query = "SELECT p FROM Persona p WHERE p.email = :email AND p.contrasena = :contrasena"),
+  
+  @NamedQuery(name = "verificarEmailExistente", query = "SELECT COUNT(p) FROM Persona p WHERE p.email = :email"),
+  
+  @NamedQuery(name = "verificarDniExistente", query = "SELECT COUNT(p) FROM Persona p WHERE p.dni = :dni")
+
 
 })
 

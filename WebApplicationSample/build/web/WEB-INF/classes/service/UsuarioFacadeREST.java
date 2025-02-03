@@ -23,7 +23,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -54,16 +53,10 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
             }
 
             // Verificar si el correo ya existe
-            if (existeCorreo(entity.getEmail())) {
-                LOGGER.log(Level.SEVERE, "El correo electrónico ya está registrado.");
+            if (verificarEmailExistente(entity.getEmail()) || verificarDniExistente(entity.getDni())) {
+                LOGGER.log(Level.SEVERE, "El correo electrónico o el DNI ya está registrado.");
 
-                throw new NotAcceptableException();
-            }
-
-            // Verificar si el correo ya existe
-            if (existeDni(entity.getDni())) {
-                LOGGER.log(Level.SEVERE, "El correo electrónico ya está registrado.");
-
+                // Exception
                 throw new NotAcceptableException();
             }
 
@@ -76,72 +69,103 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
         }
     }
 
-    // Método auxiliar que verifica si el correo ya existe
-    private boolean existeCorreo(String email) {
+    // Método para verificar si el correo electrónico ya existe
+    private boolean verificarEmailExistente(String email) {
+        Long count = 0L;
         try {
-            // Aquí hacemos la consulta en la base de datos para ver si ya existe un usuario con ese correo
-            Integer count = (Integer) em.createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.email = :email")
+            count = (Long) em.createNamedQuery("verificarEmailExistente")
                     .setParameter("email", email)
                     .getSingleResult();
-            return count > 0;  // Si el conteo es mayor a 0, significa que el correo ya está registrado
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al verificar si el correo ya existe", e);
-            throw new NotAcceptableException("Error al verificar el correo");
+            LOGGER.log(Level.SEVERE, "Error al verificar la existencia del correo", e);
+            throw new InternalServerErrorException(e);
         }
+        return count > 0; // Devuelve true si el correo existe
     }
 
-    private boolean existeDni(String dni) {
+    // Método para verificar si el DNI ya existe
+    private boolean verificarDniExistente(String dni) {
+        Long count = 0L;
         try {
-            // Aquí hacemos la consulta en la base de datos para ver si ya existe un usuario con ese correo
-            Integer count = (Integer) em.createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.dni = :dni")
+            count = (Long) em.createNamedQuery("verificarDniExistente")
                     .setParameter("dni", dni)
                     .getSingleResult();
-            return count > 0;  // Si el conteo es mayor a 0, significa que el correo ya está registrado
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error al verificar si el dni ya existe", e);
-            throw new NotAcceptableException("Error al verificar el dni");
+            LOGGER.log(Level.SEVERE, "Error al verificar la existencia del DNI", e);
+            throw new InternalServerErrorException(e);
         }
+        return count > 0; // Devuelve true si el DNI existe
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Usuario entity) {
-        super.edit(entity);
+        try {
+            super.edit(entity);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try {
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Usuario find(@PathParam("id") Long id) {
-        return super.find(id);
+        try {
+            return super.find(id);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Usuario> findAll() {
-        return super.findAll();
+        try {
+            return super.findAll();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Usuario> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "UsurioFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     //Consulta para carga de datos usuario

@@ -7,9 +7,7 @@ import G3.crud.entities.Persona;
 import G3.crud.entities.Trabajador;
 import G3.crud.entities.UpdatePasswordRequest;
 import G3.crud.entities.Usuario;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.security.Security;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +16,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -29,7 +26,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -53,51 +49,86 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
     @Override
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void create(Persona entity) {
-        super.create(entity);
+        try {
+            super.create(entity);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void edit(@PathParam("id") Long id, Persona entity) {
-        super.edit(entity);
+        try {
+            super.edit(entity);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        super.remove(super.find(id));
+        try {
+            super.remove(super.find(id));
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Persona find(@PathParam("id") Long id) {
-        return super.find(id);
+        try {
+            return super.find(id);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Override
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Persona> findAll() {
-        return super.findAll();
+        try {
+            return super.findAll();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("{from}/{to}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Persona> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-        return super.findRange(new int[]{from, to});
+        try {
+            return super.findRange(new int[]{from, to});
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
-        return String.valueOf(super.count());
+        try {
+            return String.valueOf(super.count());
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "PersonaFacadeRESTful service: Exception logging up .", ex.getMessage());
+            throw new InternalServerErrorException(ex);
+        }
     }
 
-   @GET
+    @GET
     @Path("reiniciarContrasena/{email}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -108,7 +139,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         EmailServicio emailServicio = new EmailServicio();
 
         if (email == null || email.isEmpty()) {
-            LOGGER.log(Level.INFO, "UserRESTful service: invalid email {0}.", email);
+            LOGGER.log(Level.INFO, "PersonaRESTful service: invalid email {0}.", email);
             return Response.status(Response.Status.BAD_REQUEST).entity("Los parámetros no pueden estar vacíos").build();
         }
 
@@ -121,7 +152,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
                 return Response.status(Response.Status.NOT_FOUND).entity("El email no está asociado a ninguna persona").build();
             }
 
-            LOGGER.log(Level.INFO, "UserRESTful service: resetting password for {0}.", email);
+            LOGGER.log(Level.INFO, "PersonaRESTful service: resetting password for {0}.", email);
 
             // Generamos y hasheamos la nueva contraseña
             nuevaContrasena = EmailServicio.generateRandomPassword().toString();
@@ -142,7 +173,7 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             boolean correoEnviado = emailServicio.sendEmail(email, nuevaContrasena, body, subject);
 
             if (!correoEnviado) {
-                LOGGER.log(Level.SEVERE, "UserRESTful service: Error sending email to {0}.", email);
+                LOGGER.log(Level.SEVERE, "PersonaRESTful service: Error sending email to {0}.", email);
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                         .entity("La contraseña ha sido restablecida, pero hubo un error al enviar el correo.")
                         .build();
@@ -151,10 +182,10 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             return Response.ok("La contraseña ha sido restablecida y enviada al correo.").build();
 
         } catch (NoResultException ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: No user found with email {0}.", email);
+            LOGGER.log(Level.SEVERE, "PersonaRESTful service: No user found with email {0}.", email);
             return Response.status(Response.Status.NOT_FOUND).entity("El correo no coincide con ninguna persona").build();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Error updating password for {0}.", email);
+            LOGGER.log(Level.SEVERE, "PersonaRESTful service: Error updating password for {0}.", email);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error interno del servidor").build();
         }
     }
@@ -201,15 +232,14 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
         }
     }
 
-
-        @GET
+    @GET
     @Path("inicioSesionPersona/{email}/{contrasena}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response inicioSesionPersona(@PathParam("email") String email, @PathParam("contrasena") String contrasena) {
 
         Persona persona = null;
         try {
-            LOGGER.log(Level.INFO, "UserRESTful service: find user by email and password");
+            LOGGER.log(Level.INFO, "PersonaRESTful service: find user by email and password");
             contrasena = URLDecoder.decode(contrasena, "UTF-8");
             contrasena = contrasena.replace(" ", "+");
             contrasena = Servidor.desencriptarContraseña(contrasena);
@@ -231,17 +261,16 @@ public class PersonaFacadeREST extends AbstractFacade<Persona> {
             }
 
         } catch (NoResultException e) {
-            LOGGER.log(Level.INFO, "UserRESTful service: No user found with provided email and password");
+            LOGGER.log(Level.INFO, "PersonaRESTful service: No user found with provided email and password");
             return Response.status(Response.Status.NOT_FOUND).entity("No user found").build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception reading user by email and password", e);
+            LOGGER.log(Level.SEVERE, "PersonaRESTful service: Exception reading user by email and password", e);
             throw new InternalServerErrorException(e);
         }
 
-        // Si no es un Usuario ni un Trabajador, devolver una Persona general
-        return Response.ok(persona).build();
+        // Si no es un Usuario ni un Trabajador, devolver una una Exception
+        throw new NotFoundException();
     }
-
 
     @Override
     protected EntityManager getEntityManager() {
