@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -59,8 +61,15 @@ public class Proveedor implements Serializable {
     private Date ultimaActividad;
 
     // Relacion
-    @ManyToMany(mappedBy = "proveedores", fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "vehiculo_Proveedor", schema = "concesionariodb")
     private Set<Vehiculo> vehiculos;
+    
+    
+    
+
+    
 
     @XmlTransient
     public Set<Vehiculo> getVehiculos() {

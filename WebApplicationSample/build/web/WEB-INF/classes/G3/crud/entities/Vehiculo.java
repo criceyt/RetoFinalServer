@@ -4,8 +4,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import static javax.persistence.CascadeType.ALL;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -50,7 +48,7 @@ public class Vehiculo implements Serializable {
     private TipoVehiculo tipoVehiculo;
 
     // Relacion Vehiculo a Mantenimiento
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vehiculo")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "vehiculo")
     private Set<Mantenimiento> mantenimientos;
 
     @XmlTransient
@@ -61,13 +59,12 @@ public class Vehiculo implements Serializable {
     public void setMantenimientos(Set<Mantenimiento> mantenimientos) {
         this.mantenimientos = mantenimientos;
     }
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "vehiculo_Proveedor", schema = "concesionariodb",
-            joinColumns = @JoinColumn(name = "vehiculos_idVehiculo", referencedColumnName = "idVehiculo"),
-            inverseJoinColumns = @JoinColumn(name = "proveedores_idProveedores", referencedColumnName = "idProveedor"))
+    
+    @ManyToMany(mappedBy = "vehiculos",  fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @XmlTransient
     private Set<Proveedor> proveedores;
+
+    
 
     public Set<Proveedor> getProveedores() {
         return proveedores;
@@ -78,7 +75,7 @@ public class Vehiculo implements Serializable {
     }
 
     // Relacion de Vehiculo a Compra
-    @OneToMany(cascade = ALL, mappedBy = "vehiculo", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "vehiculo", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Compra> compras;
 
     @XmlTransient

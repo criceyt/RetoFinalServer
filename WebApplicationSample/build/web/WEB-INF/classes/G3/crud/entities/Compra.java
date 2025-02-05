@@ -12,8 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,15 +32,15 @@ public class Compra implements Serializable {
     @EmbeddedId
     private CompraId idCompra;
     
-    
-    @MapsId("idPersona")
-    @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")
     @ManyToOne
+    @MapsId("idPersona")
+    @JoinColumn(name = "idPersona", referencedColumnName = "idPersona")    
     private Usuario usuario;
     
-    @MapsId("idVehiculo")
-    @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
+    
     @ManyToOne
+    @MapsId("idVehiculo")
+    @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")    
     private Vehiculo vehiculo;
     
     

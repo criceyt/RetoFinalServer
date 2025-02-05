@@ -1,7 +1,6 @@
 package G3.crud.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Set;
 import static javax.persistence.CascadeType.ALL;
 import javax.persistence.Entity;
@@ -10,8 +9,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,7 +31,7 @@ public class Usuario extends Persona implements Serializable {
     private boolean premium;
 
     // Relación de Usuario a Compra
-    @OneToMany(cascade = ALL, mappedBy = "usuario", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
     private Set<Compra> compras;
    
 
